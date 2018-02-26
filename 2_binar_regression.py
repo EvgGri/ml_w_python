@@ -24,4 +24,4 @@ plt.yticks([0.0, 0.5 , 1.0])
 plt.ylim(-0.1 , 1.1)
 plt.xlabel('z')
 plt.ylabel('$\phi (z)$')
-plt.show
+plt.show()
