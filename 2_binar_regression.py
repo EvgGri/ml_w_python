@@ -80,6 +80,10 @@ y_combined = np.hstack((y_train, y_test))
 
 # Непосредственно анализ данных
 
+# Параметры для построения логистической регресии
+# C : float, optional (default=1.0)
+# Inverse of regularization strength; must be a positive float. Like in support vector machines,
+# smaller values specify stronger regularization.
 from sklearn.linear_model import LogisticRegression
 lr = LogisticRegression(C=1000.0, random_state=0)
 lr.fit(X_train_std, y_train)
@@ -89,3 +93,25 @@ plt.xlabel('длина лепестка [стандартизованная]')
 plt.ylabel('ширина лепестка [стандартизованная]')
 plt.legend(loc = 'upper left')
 plt.show()
+
+# Мы можем предсказывать вероятность принадлежности образцов классам при помощи метода predict_proba.
+# Например, можно предсказывать вероятности первого образца ириса щетинистого:
+
+lr.predict_proba(X_test_std)[0]
+
+# Изменяем формат представления вывода для "обычных" чисел
+np.set_printoptions(precision=3)
+print(lr.predict_proba(X_test_std)[0])
+# Приведенный ниже массив говорит о том, что модель предсказывает с вероятностью 94%  принадлежность
+# образца к классу ириса виргинского, 6% к классу ирис разноцветный
+['{:.2f}'.format(i) for i in lr.predict_proba(X_test_std)[0]]
+
+
+# Определяем формат вывода массива данных
+# def ndprint(a, format_string ='{0:.2f}'):
+#     print [format_string.format(v,i) for i,v in enumerate(a)]
+# ndprint(x)
+
+# Решение проблемы переобучения
+# Часто встречается ситуация, когда модель хорошо работает на тренировочных данных, но плохо работает
+# на ранее не встречавшихся данных.
