@@ -25,3 +25,18 @@
 # Сгенерируем линейно неразделимый набор данных, который поможет нам (вид логического элемента XOR, используя Numpy) с примером данного
 # типа классификации. Используя функцию logical_xor сгенерируем набор данных, где первым 100 элементам назначается класс 1,
 # последним 100 элементам назначим класс -1.
+
+import numpy as np
+np.random.seed(0)
+X_xor = np.random.randn(200,2)
+y_xor = np.logical_xor(X_xor[:,0] > 0, X_xor[:,1] > 0)
+y_xor = np.where(y_xor,1, -1)
+
+import matplotlib.pyplot as plt
+plt.scatter(X_xor[y_xor == 1, 0], X_xor[y_xor == 1 , 1] ,
+            c='b', marker='x', label='1')
+plt.scatter(X_xor[y_xor == -1, 0], X_xor[y_xor == -1, 1],
+            c='r', marker='s', label='-1')
+plt.ylim(-3.0)
+plt.legend()
+plt.show()
