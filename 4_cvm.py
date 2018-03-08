@@ -118,3 +118,31 @@ X_combined_std = np.vstack((X_train_std, X_test_std))
 y_combined = np.hstack((y_train, y_test))
 
 # -- Непосредственно анализ данных
+
+from sklearn.svm import SVC
+svm = SVC(kernel='rbf', C=1.0, random_state=0, gamma=0.2)
+svm.fit(X_train_std, y_train)
+from mlxtend.plotting import plot_decision_regions
+import matplotlib.pyplot as plt
+plot_decision_regions(X_combined_std, y_combined, clf =svm, res=0.02)
+plt.xlabel('длина лепестка [стандартизованная]')
+plt.ylabel('ширина лепестка [стандартизованная]')
+plt.legend(loc = 'upper left')
+plt.show()
+# Учитывая, что мы выбрали относитльно малую величину для параметра gamma, итоговая граница решения модели SVM с ядром из RBF будет относительно
+# мягкой.
+
+# Увеличим параметр gamma проследим за влиянием на границу решения:
+from sklearn.svm import SVC
+svm = SVC(kernel='rbf', C=1.0, random_state=0, gamma=100)
+svm.fit(X_train_std, y_train)
+from mlxtend.plotting import plot_decision_regions
+import matplotlib.pyplot as plt
+plot_decision_regions(X_combined_std, y_combined, clf =svm, res=0.02)
+plt.xlabel('длина лепестка [стандартизованная]')
+plt.ylabel('ширина лепестка [стандартизованная]')
+plt.legend(loc = 'upper left')
+plt.show()
+ # Теперь видно, что граница решения вокруг классов 0 и 1 гораздо компактнее
+ # Ясно, что модель очень хорошо подогнана под тренировочные данные, такой классификатор будет иметь высокую ошибку обобщения.
+ # Т.е. очен важно правильно подобрать параметром gamma для управления переобучением.
