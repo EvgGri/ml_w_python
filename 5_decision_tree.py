@@ -25,3 +25,21 @@
 # 1. мера неоднородночти Джини I_g
 # 2. энтропия I_h
 # 3. ошибка классификации I_e
+
+import matplotlib. pyplot import numpy as np
+def gini(p):
+    return (p)*(1-(p))+(1-p)*(1-(1-p))
+
+def entropy(p):
+    return -p*np.log2(p) - (1-p)*np.log2(1-p)
+
+as plt
++ ( 1 - p ) * ( l -
+- ( 1 -     * n p . l o g 2 ( ( 1 -
+def error
+return 1 - np.max([p, 1 -
+  = np.arange      1.      1)
+ent=[entropy(p) if  !=  elseNone for  in   sc_ent =         if   else None for   in ent]
+err= [error(i)foriin
+fig =plt.figure()
+     plt.subplot(lll)
