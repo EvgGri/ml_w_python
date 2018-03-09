@@ -22,9 +22,9 @@
 # IG(D_p,f) = I(D_p) - (N_left/N_p)*I(D_left) - (N_right/N_p)*I(D_right)
 
 # В силу вышесказанного в бинарных деревьях решений обычно используется 3 меры неоднородности или критерия расщепления:
-# 1. мера неоднородночти Джини I_g
-# 2. энтропия I_h
-# 3. ошибка классификации I_e
+# 1. мера неоднородночти Джини I_g (мера неоднородности Джини минимизирует вероятность ошибочной классификации)
+# 2. энтропия I_h (энтропицный критерий пытается максимизировать взаимную информацию в дереве)
+# 3. ошибка классификации I_e (минимизурует ошибку классификации)
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -59,4 +59,53 @@ ax.axhline(y=1.0, linewidth=1 , color= 'k', linestyle= '--')
 plt.ylim([0.0, 1.1])
 plt.xlabel('p(i=1)')
 plt.ylabel('Индекс неоднородности')
+plt.show()
+
+
+# --Дерево решений
+# Глубина 3, в качестве критерия неоднородности используется Энтропия
+
+# Подготовка данных
+# Импорт основных библиотек
+from sklearn import datasets
+import numpy as np
+
+# прогружаем стандартную библиотеку
+iris = datasets.load_iris()
+
+# длина и ширина лепестков цветка ириса
+X = iris.data[:,[2,3]]
+# метки классов, которые присутствуют
+y = iris.target
+# все закодировано в числовом формате для производительности
+print(np.unique(y))
+
+# оценка модели на ранее не встречавшихся данных
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
+
+# стандартизация признаков из модуля preprocessing
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+# вычисление параметров распределения для train данных (стандартное отклонение и мат. ожидание)
+# для каждого набора признаков. После вызова trasform мы стандартизируем тестовые и тренинговые данные.
+# Для стандартизации тестового набора мы используем теже самые параметры, вычисленные для train набора.
+# Поэтому значения в тренировочном и тестовом наборе сопоставимы.
+sc.fit(X_train)
+X_train_std = sc.transform(X_train)
+X_test_std = sc.transform(X_test)
+
+X_combined_std = np.vstack((X_train_std, X_test_std))
+y_combined = np.hstack((y_train, y_test))
+
+from sklearn.tree import DecisionTreeClassifier
+tree = DecisionTreeClassifier(criterion="entropy", max_depth=3, random_state=0)
+tree.fit(X_train_std, y_train)
+
+from mlxtend.plotting import plot_decision_regions
+import matplotlib.pyplot as plt
+plot_decision_regions(X_combined_std, y_combined, clf = tree, res=0.02)
+plt.xlabel('длина лепестка [стандартизованная]')
+plt.ylabel('ширина лепестка [стандартизованная]')
+plt.legend(loc = 'upper left')
 plt.show()
