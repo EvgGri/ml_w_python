@@ -109,3 +109,7 @@ plt.xlabel('длина лепестка [стандартизованная]')
 plt.ylabel('ширина лепестка [стандартизованная]')
 plt.legend(loc = 'upper left')
 plt.show()
+
+from sklearn . tree import export_graphviz
+export_graphviz(tree, out_file='./trees/tree.dot',
+                feature_names=[ 'petal length' , 'petal width ' ] )
