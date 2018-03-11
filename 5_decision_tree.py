@@ -116,8 +116,3 @@ export_graphviz(tree, out_file='tree.dot',
 import graphviz
 # system("dot -Tpng /Users/grigorev-ee/Work/AnacondaProjects/My_projects/ml_w_python/trees/tree.dot -o /Users/grigorev-ee/Work/AnacondaProjects/My_projects/ml_w_python/trees/tree.png")
 system('cd /Users/grigorev-ee/Work/AnacondaProjects/My_projects/ml_w_python/trees/ && dot -Tpng tree.dot -o tree.png')
-
-# from graphviz import Source
-# temp = ""
-# s = Source(temp, filename="./tree.dot", format="png")
-# s.view()
