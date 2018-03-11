@@ -113,3 +113,5 @@ plt.show()
 from sklearn . tree import export_graphviz
 export_graphviz(tree, out_file='./trees/tree.dot',
                 feature_names=[ 'petal length' , 'petal width ' ] )
+
+system("dot -Tpng /Users/grigorev-ee/Work/AnacondaProjects/My_projects/ml_w_python/trees/tree.dot -o /Users/grigorev-ee/Work/AnacondaProjects/My_projects/ml_w_python/trees/tree.png")
