@@ -111,8 +111,11 @@ plt.legend(loc = 'upper left')
 plt.show()
 
 from sklearn . tree import export_graphviz
-export_graphviz(tree, out_file='tree.dot',
+export_graphviz(tree, out_file='/Users/grigorev-ee/Work/AnacondaProjects/My_projects/ml_w_python/trees/tree.dot',
                 feature_names=[ 'petal length' , 'petal width ' ] )
-import graphviz
-# system("dot -Tpng /Users/grigorev-ee/Work/AnacondaProjects/My_projects/ml_w_python/trees/tree.dot -o /Users/grigorev-ee/Work/AnacondaProjects/My_projects/ml_w_python/trees/tree.png")
-system('cd /Users/grigorev-ee/Work/AnacondaProjects/My_projects/ml_w_python/trees/ && dot -Tpng tree.dot -o tree.png')
+
+import graphviz as dot
+dot.render('dot', "png", "/Users/grigorev-ee/Work/AnacondaProjects/My_projects/ml_w_python/trees/tree.dot")
+
+from IPython.display import Image
+Image("/Users/grigorev-ee/Work/AnacondaProjects/My_projects/ml_w_python/trees/tree.dot.png")
