@@ -22,7 +22,12 @@ df_wine.describe()
 df_wine.shape
 
 # Разбиение на train и test выборки
-X, y = df_wine.iloc[:,:12].values, df_wine['Метка класса'].values
+X, y = df_wine.iloc[:,0:13].values, df_wine['Метка класса'].values
+
+X = df_wine.ix[:,['Алкоголь','Яблочная кислота','Зола',
+                 'Щелочность золы','Магний','Всего фенола','Флаваноиды',
+                 'Фенолы нефлаваноидные','Проантоцианины','Интенсивность цвета',
+                 'Оттенок','OD280 / OD315 разбавленных вин','Пролин']]
 
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
@@ -48,7 +53,7 @@ sc = StandardScaler()
 # Для стандартизации тестового набора мы используем теже самые параметры, вычисленные для train набора.
 # Поэтому значения в тренировочном и тестовом наборе сопоставимы.
 sc.fit(X_train)
-X_train_std = sc.transform(X_train)
+X_train_std = sc.fit_transform(X_train)
 X_test_std = sc.transform(X_test)
 
 # -=-=-= Отбор содержательных признаков
