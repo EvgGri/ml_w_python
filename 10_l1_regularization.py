@@ -24,10 +24,11 @@ df_wine.shape
 # Разбиение на train и test выборки
 X, y = df_wine.iloc[:,0:13].values, df_wine['Метка класса'].values
 
-X = df_wine.ix[:,['Алкоголь','Яблочная кислота','Зола',
-                 'Щелочность золы','Магний','Всего фенола','Флаваноиды',
-                 'Фенолы нефлаваноидные','Проантоцианины','Интенсивность цвета',
-                 'Оттенок','OD280 / OD315 разбавленных вин','Пролин']]
+# Альтернативная задача массива данных
+# X = df_wine.ix[:,['Алкоголь','Яблочная кислота','Зола',
+#                  'Щелочность золы','Магний','Всего фенола','Флаваноиды',
+#                  'Фенолы нефлаваноидные','Проантоцианины','Интенсивность цвета',
+#                  'Оттенок','OD280 / OD315 разбавленных вин','Пролин']]
 
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
@@ -121,7 +122,7 @@ for c in np.arange(-4, 6, dtype=float):
 weights = np.array(weights)
 for column, color in zip(range(weights.shape[1]), colors):
     plt.plot(params, weights[:, column],
-             label=df_wine.columns[column+1],
+             label=df_wine.columns[column],
              color=color)
 plt.axhline(0, color='black', linestyle='--', linewidth=3)
 plt.xlim([10**(-5),10**5])
