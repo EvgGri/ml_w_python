@@ -89,7 +89,7 @@ from sklearn.metrics import accuracy_score
 # подмножестве наиболее перспективных признаков.
 class SBS():
     def __init__(self, estimator, k_features,
-                 scorring=accuracy_score,
+                 scoring=accuracy_score,
                  test_size=0.25, random_state=1):
                  self.scoring=scoring
                  self.estimator=clone(estimator)
@@ -105,7 +105,7 @@ class SBS():
 
         # Индексы столбцов окончательного подмножества
         self.indicies_ = tuple(range(dim))
-        self.subset_ = [self.indicies_]
+        self.subsets_ = [self.indicies_]
         score = self._calc_score(X_train, y_train, X_test, y_test, self.indicies_)
         self.scores_ = [score]
 
@@ -116,9 +116,9 @@ class SBS():
             for p in combinations(self.indicies_, r=dim-1):
                 score = self._calc_score(X_train, y_train, X_test, y_test, p)
                 scores.append(score)
-                subsets.append(subset)
+                subsets.append(p)
 
-            best = np.agrmax(scores)
+            best = np.argmax(scores)
             self.indicies_ = subsets[best]
             self.subsets_.append(self.indicies_)
             dim -= 1
@@ -129,11 +129,27 @@ class SBS():
 
         return self
 
-        def transform(self, X):
-            return X[: self.indicies_]
+    def transform(self, X):
+        return X[:, self.indicies_]
 
-        def _calc_score(self, X_train, y_train, X_test, y_test, indicies_):
-            self.estimator.fit(X_train[:, indicies], y_train)
-            y_pred = self.estimator.predict(X_test[:, indicies])
-            score = self.scoring(y_test, y_pred)
-            return score
+    def _calc_score(self, X_train, y_train, X_test, y_test, indicies):
+        self.estimator.fit(X_train[:, indicies], y_train)
+        y_pred = self.estimator.predict(X_test[:, indicies])
+        score = self.scoring(y_test, y_pred)
+        return score
+
+# Реализация SBS с использованием классификатора KNN библиотеки Scikit-Learn
+from sklearn.neighbors import KNeighborsClassifier
+import matplotlib.pyplot as plt
+knn = KNeighborsClassifier(n_neighbors=2)
+sbs = SBS(knn, k_features=1)
+sbs.fit(X_train_std, y_train)
+
+# График верности классификации классификатора KNN
+k_feat = [len(k) for k in sbs.subsets_]
+plt.plot(k_feat, sbs.scores_, marker='o')
+plt.ylim([0.7, 1.1])
+plt.ylabel('Верность')
+plt.xlabel('Число признаков')
+plt.grid()
+plt.show()
