@@ -78,6 +78,15 @@ import numpy as np
 from sklearn.model_selection import train_test_split # cross validation
 from sklearn.metrics import accuracy_score
 
+# В раелизации ниже, k_features - требуемое число признаков, которое мы хотим получить.
+# accuracy_score оценивает качество классификации модели для подмножества признаков.
+# В функции itertools.combinations сужается подмножество признаков, пока подмножество не получит требуемую размерность.
+# На каждой итерации, оценка качества модели accuracy_score наилучшего подмножества накапливается в списке self.scores_,
+# основываясь на создаваемом внутри тестовом наборе X_test.
+# Индексы столбцов окончательного подмножества признаков назначаются списку self.indicies_, который используется методом
+# transform для возврата нового массива данных со столбцами отобранных признаков.
+# Вместо того, чтобы вычислять критерий явным образом внутри метода fit, просто удаляется признак, который не содержится в
+# подмножестве наиболее перспективных признаков.
 class SBS():
     def __init__(self, estimator, k_features,
                  scorring=accuracy_score,
@@ -91,9 +100,40 @@ class SBS():
     def fit(self, X, y):
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=self.test_size, random_state=self.random_state)
 
-    # Стартовая размерность пространства признаков
-    dim = X_train.shape[1]
+        # Стартовая размерность пространства признаков
+        dim = X_train.shape[1]
 
-    # Индексы столбцов окончательного подмножества
-    self.indicies_ = tuple(range(dim))
-    
+        # Индексы столбцов окончательного подмножества
+        self.indicies_ = tuple(range(dim))
+        self.subset_ = [self.indicies_]
+        score = self._calc_score(X_train, y_train, X_test, y_test, self.indicies_)
+        self.scores_ = [score]
+
+        while dim > self.k_features:
+            scores = []
+            subsets = []
+
+            for p in combinations(self.indicies_, r=dim-1):
+                score = self._calc_score(X_train, y_train, X_test, y_test, p)
+                scores.append(score)
+                subsets.append(subset)
+
+            best = np.agrmax(scores)
+            self.indicies_ = subsets[best]
+            self.subsets_.append(self.indicies_)
+            dim -= 1
+
+            self.scores_.append(scores[best])
+
+        self.k_scores_ = self.scores_[-1]
+
+        return self
+
+        def transform(self, X):
+            return X[: self.indicies_]
+
+        def _calc_score(self, X_train, y_train, X_test, y_test, indicies_):
+            self.estimator.fit(X_train[:, indicies], y_train)
+            y_pred = self.estimator.predict(X_test[:, indicies])
+            score = self.scoring(y_test, y_pred)
+            return score
