@@ -88,7 +88,6 @@ importances = forest.feature_importances_
 indices = np.argsort(importances)[::-1]
 
 for f in range(X_train.shape[1]):
-    # print("$2d) $-*s %f" % (f, 30, feat_labels[indices[f]], importances[indices[f]])
     print("{:3d})".format(f), "{:25.25}".format(feat_labels[indices[f]]), "{:10.6f}".format(importances[indices[f]]))
 
 # Выведем график, в котором разные признаки из набора данных упорядочены по их относительной важности,
@@ -100,3 +99,31 @@ plt.xticks(range(X_train.shape[1]), feat_labels[indicies], rotation = 90)
 plt.xlim([-1, X_train.shape[1]])
 plt.tight_layout()
 plt.show()
+
+# =-=-=-=-=-=-=-=-=- Непосредственная реализация отбора признаков через RandomForestClassifier на стандартизованных данных -=-=-=-=-=-=-=-=-
+
+# Натренируем лес из 10 000 деревьев на нашем наборе данных и упорядочим 13 признаков по их соответствующим мерам важности.
+# Отметим, что модели на основе деревьев решений в стандартизации и нормализации не нуждаются.
+# Но мы проверим, изменится ли важность признаков для стандартизованного набора данных или нет.
+from sklearn.ensemble import RandomForestClassifier
+feat_labels = df_wine.columns
+
+forest = RandomForestClassifier(n_estimators=10000, random_state=0, n_jobs=-1)
+forest.fit(X_train_std, y_train)
+
+importances = forest.feature_importances_
+indices = np.argsort(importances)[::-1]
+
+for f in range(X_train_std.shape[1]):
+    print("{:3d})".format(f), "{:25.25}".format(feat_labels[indices[f]]), "{:10.6f}".format(importances[indices[f]]))
+
+# Выведем график, в котором разные признаки из набора данных упорядочены по их относительной важности,
+# отметим то, что важности признаков нормализованы, т.е. в сумме они дают единицу.
+import matplotlib.pyplot as plt
+plt.title('Важности признаков')
+plt.bar(range(X_train_std.shape[1]), importances[indicies], color='lightblue', align = 'center')
+plt.xticks(range(X_train_std.shape[1]), feat_labels[indicies], rotation = 90)
+plt.xlim([-1, X_train_std.shape[1]])
+plt.tight_layout()
+plt.show()
+# Видим, что важность признаков стандартизованном наборе данных не изменилась.
