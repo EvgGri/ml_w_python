@@ -88,4 +88,15 @@ importances = forest.feature_importances_
 indices = np.argsort(importances)[::-1]
 
 for f in range(X_train.shape[1]):
-    print("$2d) $-*s %f" % (f, 30, feat_labels[indices[f]], importances[indices[f]])
+    # print("$2d) $-*s %f" % (f, 30, feat_labels[indices[f]], importances[indices[f]])
+    print("{:3d})".format(f), "{:25.25}".format(feat_labels[indices[f]]), "{:10.6f}".format(importances[indices[f]]))
+
+# Выведем график, в котором разные признаки из набора данных упорядочены по их относительной важности,
+# отметим то, что важности признаков нормализованы, т.е. в сумме они дают единицу.
+import matplotlib.pyplot as plt
+plt.title('Важности признаков')
+plt.bar(range(X_train.shape[1]), importances[indicies], color='lightblue', align = 'center')
+plt.xticks(range(X_train.shape[1]), feat_labels[indicies], rotation = 90)
+plt.xlim([-1, X_train.shape[1]])
+plt.tight_layout()
+plt.show()
