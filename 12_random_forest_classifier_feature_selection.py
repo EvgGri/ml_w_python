@@ -145,7 +145,6 @@ plt.show()
 
 # Create a selector object that will use the random forest classifier to identify
 # features that have an importance of more than 0.15
-sfm = SelectFromModel(clf, threshold=0.15)
 from sklearn.feature_selection import SelectFromModel
 sfm = SelectFromModel(forest, threshold=0.15)
 
