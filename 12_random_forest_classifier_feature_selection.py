@@ -157,6 +157,11 @@ for feature_list_index in sfm.get_support(indices=True):
 
 #Create A Data Subset With Only The Most Important Features
 
+# There are indeed several ways to get feature "importances". As often, there is no strict consensus about what this word means.
+# In scikit-learn, we implement the importance as described in [1] (often cited, but unfortunately rarely read...). It is sometimes called "gini importance" or "mean decrease impurity" and is defined as the total decrease in node impurity (weighted by the probability of reaching that node (which is approximated by the proportion of samples reaching that node)) averaged over all trees of the ensemble.
+# In the literature or in some other packages, you can also find feature importances implemented as the "mean decrease accuracy". Basically, the idea is to measure the decrease in accuracy on OOB data when you randomly permute the values for that feature. If the decrease is low, then the feature is not important, and vice-versa.
+# [1]: Breiman, Friedman, "Classification and regression trees", 1984.
+
 # Transform the data to create a new dataset containing only the most important features
 # Note: We have to apply the transform to both the training X and test X data.
 X_important_train = sfm.transform(X_train_std)
