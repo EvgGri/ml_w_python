@@ -94,8 +94,8 @@ for f in range(X_train.shape[1]):
 # отметим то, что важности признаков нормализованы, т.е. в сумме они дают единицу.
 import matplotlib.pyplot as plt
 plt.title('Важности признаков')
-plt.bar(range(X_train.shape[1]), importances[indicies], color='lightblue', align = 'center')
-plt.xticks(range(X_train.shape[1]), feat_labels[indicies], rotation = 90)
+plt.bar(range(X_train.shape[1]), importances[indices], color='lightblue', align = 'center')
+plt.xticks(range(X_train.shape[1]), feat_labels[indices], rotation = 90)
 plt.xlim([-1, X_train.shape[1]])
 plt.tight_layout()
 plt.show()
@@ -121,8 +121,8 @@ for f in range(X_train_std.shape[1]):
 # отметим то, что важности признаков нормализованы, т.е. в сумме они дают единицу.
 import matplotlib.pyplot as plt
 plt.title('Важности признаков')
-plt.bar(range(X_train_std.shape[1]), importances[indicies], color='lightblue', align = 'center')
-plt.xticks(range(X_train_std.shape[1]), feat_labels[indicies], rotation = 90)
+plt.bar(range(X_train_std.shape[1]), importances[indices], color='lightblue', align = 'center')
+plt.xticks(range(X_train_std.shape[1]), feat_labels[indices], rotation = 90)
 plt.xlim([-1, X_train_std.shape[1]])
 plt.tight_layout()
 plt.show()
