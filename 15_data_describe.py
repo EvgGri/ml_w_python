@@ -4,7 +4,7 @@ data = load_wine()
 data.target[[10, 80, 140]]
 list(data.target_names)
 
-
+import pandas as pd
 df_wine = pd.DataFrame(data.data)
 
 df_wine.columns=['Алкоголь','Яблочная кислота','Зола',
