@@ -104,3 +104,14 @@ plt.xlabel('LD 1')
 plt.ylabel('LD 2')
 plt.legend(loc='lower left')
 plt.show()
+
+# Понизив силу регуляризации, можно было бы сместить границы решения, в результате чего модели логистической регресси будут правильно классифицировать все
+# образцы в тренировочном наборе данных.
+# Посмотрим результаты применения LDA на тестовом наборе данных.
+X_test_lda = lda.transform(X_test_std)
+
+plot_decision_regions(X_test_lda, y_test, clf = lr, res=0.02)
+plt.xlabel('LD 1')
+plt.ylabel('LD 2')
+plt.legend(loc='lower left')
+plt.show()
