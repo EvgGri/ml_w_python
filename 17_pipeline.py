@@ -36,7 +36,9 @@ from sklearn.preprocessing import LabelEncoder
 X = df.iloc[:,2:].values
 y = df.iloc[:,1].values
 
-y[:3]
+print(y[:36])
 
 le = LabelEncoder()
 y=le.fit_transform(y)
+
+print(y[:36])
