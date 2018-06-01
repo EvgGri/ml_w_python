@@ -29,3 +29,14 @@ names = ['id_number', 'diagnosis', 'radius_mean',
          'fractal_dimension_worst']
 
 df = df[names]
+
+# Присвоим 30 признакоы массиву X библиотеки NumPy.
+# При помощи LabelEncoder преобразуем метки классов из их исходного строкового представления (M и B) в целочисленное.
+from sklearn.preprocessing import LabelEncoder
+X = df.iloc[:,2:].values
+y = df.iloc[:,1].values
+
+y[:3]
+
+le = LabelEncoder()
+y=le.fit_transform(y)
