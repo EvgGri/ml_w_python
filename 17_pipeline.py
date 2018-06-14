@@ -41,4 +41,30 @@ print(y[:36])
 le = LabelEncoder()
 y=le.fit_transform(y)
 
+# M-злокачественная опухоль (malignant), B-доброкачественная (benign). Выведем первые 36 элементов из набора данных.
 print(y[:36])
+
+# Выведем пример того, как работает кодировщик на тестовом наборе данных
+le.transform(['M','M','B'])
+
+# Прежде, чем в следующем подразделе мы построим наш первый модельный конвейер, рзделим выборку на обучающую и тренировочную.
+# Оценка модели на ранее не встречавшихся данных
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1)
+
+# Совмещение преобразователей и оценщиков в конвейере
+print(X_train[:,1])
+
+# Вместо раздельного выполнения шагов по подгонке и преобразованию тренировочного и тестового наборов данных мы можем расположить бъекты
+# StandardScaler, PCA и LogisticRegression друг за другом в конвейере.
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
+
+pipe_lr = Pipeline([('scl', StandardScaler()),
+                    ('pca', PCA(n_components=2)),
+                    ('clf', LogisticRegression(random_state=1))])
+
+pipe_lr.fit(X_train, y_train)
+print('Верность на тестовом наборе: %.3f', pipe_lr.score(X_test, y_test))
