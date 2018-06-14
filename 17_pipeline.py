@@ -6,7 +6,7 @@
 # M - malignant, злокачественная, B - benign доброкачественная, столбцы 3-32 содержат 30 вещественных признаков из изображений опухолей
 
 import pandas as pd
-
+import numpy as np
 # url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data'
 # df = pd.read_csv(url, header=None)
 
@@ -68,3 +68,11 @@ pipe_lr = Pipeline([('scl', StandardScaler()),
 
 pipe_lr.fit(X_train, y_train)
 print('Верность на тестовом наборе: %.3f', pipe_lr.score(X_test, y_test))
+
+# Использование K-блочной перекрестной проверки для оценки качества модели
+from sklearn .model_selection import cross_validate
+scores = cross_validate(estimator=pipe_lr, X=X_train, y=y_train, cv=10, n_jobs=1)
+print('Оценки перекрестно-проверочной верности: %s' % scores)
+score_avg = np.mean(scores['test_score'])
+score_std = np.std(scores['test_score'])
+print('Перекрестно-проверочная верность: %.3f +/- %.3f' % (score_avg, score_std))
