@@ -60,7 +60,7 @@ le.transform(['M','M','B'])
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1)
 
-# -=-=-=-=-=-=-= Основной алгоритм
+# -=-=-=-=-=-=-= Основной алгоритм -=-=-=-=-=-=-=-=-=-=
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
@@ -75,7 +75,22 @@ param_grid = [{'clf__C': param_range,
                'clf__gamma': param_range,
                'clf__kernel': ['rbf']}]
 
+# Инициализируем объект GridSearchCV, чтобы натренировать и настроить конвейер методо опорных векторов (SVM).
+# Мы назначаем параметру param_grid объекта GridSearchCV список словарей с определением параметров, которые мы хотели бы настроить.
+# Для линейного классификатора SVM мы настраиваем только один параметр, параметр обратной регуляризации C, для ядерного SVM c РБФ в
+# качестве ядра мы выполнили настройку двух параметров: C и gamma. Отметим, что параметр gamma имеет непосредственное отношение к
+# ядерным методам SVM. По результатам применения оптимизационного поиска по сетке параметров в трибуте best_score мы получим оценку
+# наиболее качественной модели и обратились к его параметрам через атрибут best_params.
 gs=GridSearchCV(estimator=pipe_svc, param_grid=param_grid, scoring='accuracy', cv=10, n_jobs=-1)
 gs=gs.fit(X_train, y_train)
 print('Перекрестно-проверочная верность: ', gs.best_score_)
 print('Лучшие параметры: ', gs.best_params_)
+
+# Воспользуемся независимым тестовым набором данных для оценки качества наилучшей отобранной модели, которая доступна через атрибут
+# best_estimator_ объекта GridSearchCV
+clf = gs.best_estimator_
+clf.fit(X_train, y_train)
+print('Верность на тестовом наборе: %.3f' % clf.score(X_test, y_test))
+
+# Поиск по сетке параметров является мощным методом нахождения оптимальных параметров, но при этом очень затратным в плане ресурсов.
+# Альтернативным подходом является метод рандомизированного поиска (RandomizedSearchCV).
