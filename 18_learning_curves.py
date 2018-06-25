@@ -83,6 +83,7 @@ pipe_lr = Pipeline([('scl', StandardScaler()),
                     ('pca', PCA(n_components=2)),
                     ('clf', LogisticRegression(penalty='l2', random_state=0))])
 
+# np.linespace - используем 10 равноотстоящих относительных интервалов для размеров тренировочных данных
 train_sizes, train_scores, test_scores = learning_curve(estimator=pipe_lr, X=X_train, y=y_train,
                                                        train_sizes=np.linspace(0.1,1.0,10), cv=10, n_jobs=1)
 train_mean = np.mean(train_scores, axis=1)
