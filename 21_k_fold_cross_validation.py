@@ -89,3 +89,6 @@ gs=GridSearchCV(estimator=DecisionTreeClassifier(random_state=0), param_grid=[{'
                 scoring='accuracy', cv=5, n_jobs=-1)
 scores=cross_val_score(gs, X_train, y_train, scoring='accuracy', cv=5)
 print('Перекрестно-проверочная верность: %.3f +/- %.3f' % (np.mean(scores), np.std(scores)))
+
+# Как видно, качество работы на данных вложенной перекрестной проверки модели SVM лучше качества модели дерева решений.
+# Поэтому они ожилдаемо может быть более подходящим выбором для классификации новых данных.
