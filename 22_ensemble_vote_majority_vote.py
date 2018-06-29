@@ -32,7 +32,11 @@ clf_labels = ['Логистическая регрессия', 'Дерево р�
 print('10-блочная перекрестная проверка:\n')
 
 for clf, label in zip([pipe1,clf2, pipe3], clf_labels):
-    scores = cross_val_score(estimator='clf', X=X_train, y=y_train, cv=10, scoring='roc_auc')
-    print('ROC/AUC: 0.2f (+/- 0.2f) [%s]' % (scores.mean(), scores.std(), label))
+    scores = cross_val_score(estimator=clf,
+                                X=X_train,
+                                y=y_train,
+                                cv=10,
+                                scoring='roc_auc')
+    print("ROC/AUC: {:.2f} (+/- {:.2f}) {:5}".format(scores.mean(), scores.std(), label))
 
 print('* ROC AUC = площадь под ROC-кривой')
