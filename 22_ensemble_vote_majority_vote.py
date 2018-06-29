@@ -40,3 +40,11 @@ for clf, label in zip([pipe1,clf2, pipe3], clf_labels):
     print("ROC/AUC: {:.2f} (+/- {:.2f}) {:5}".format(scores.mean(), scores.std(), label))
 
 print('* ROC AUC = площадь под ROC-кривой')
+
+# -=-=-=-=-=-=-=-=-=-=-=-=- Реализация класса -=-=-=-=-=-=-=-=-
+# Реализация классификатора на основе мажоритарного голосования
+from sklearn.base import BaseEstimator
+from sklearn.base import ClassifierMixin
+
+
+mv_clf = MajorityVoteClassifier(classifiers=[pipe1,clf2, pipe3])
