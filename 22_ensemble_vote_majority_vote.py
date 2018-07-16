@@ -139,3 +139,28 @@ all_clf = [pipe1, clf2, pipe3, mv_clf]
 for clf, label in zip(all_clf, clf_labels):
     scores = cross_val_score(estimator=clf, X=X_train, y=y_train, cv=10, scoring='roc_auc')
     print("ROC_AUC: %0.2f (+/- %0.2f) [%s]" % (scores.mean(), scores.std(), label))
+
+# Оценка и тонкая настройка ансамблевого классификатора
+# Вычислим ROC-кривые на тестовом наборе данных, чтобы убедиться, что классификатор `MajorityVoteClassifier хорошо обобщается
+# на ранее не встречавшиеся данные
+from sklearn.metrics import roc_curve
+from sklearn.metrics import auc
+import matplotlib.pyplot as plt
+colors = ['black', 'orange', 'blue', 'green']
+linestyles = [':', '--', '-.', '-']
+
+for clf, label, clr, ls in zip(all_clf, clf_labels, colors, linestyles):
+    # принимая, что метка положительного класса равна 1
+    y_pred=clf.fit(X_train, y_train).predict_proba(X_test)[:,1]
+    fpr, tpr, thresholds = roc_curve(y_true=y_test, y_score=y_pred)
+    roc_auc = auc(x=fpr, y=tpr)
+    plt.plot(fpr, tpr, color=clr, linestyle=ls, label='%s (auc=%0.2f)' % (label, roc_auc))
+
+plt.legend(loc='lower right')
+plt.plot([0,1], [0,1], linestyle='--', color='gray', linewidth=2)
+plt.xlim([-0.1, 1.1])
+plt.ylim([-0.1, 1.1])
+plt.grid()
+plt.xlabel('Доля ложноположительных')
+plt.ylabel('Доля истинно положительных')
+plt.show()
