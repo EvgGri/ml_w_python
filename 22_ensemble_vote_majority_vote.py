@@ -45,6 +45,52 @@ print('* ROC AUC = площадь под ROC-кривой')
 # Реализация классификатора на основе мажоритарного голосования
 from sklearn.base import BaseEstimator
 from sklearn.base import ClassifierMixin
+from sklearn.preprocessing import LabelEncoder
+from sklearn.externals import six
+from sklearn.base import clone
+from sklearn.pipeline import _name_estimators
+import numpy as np
+import operator
 
+class MajorityVoteClassifier(BaseEstimator, ClassifierMixin):
+    """Ансамблевый классификатор на основе мажоритарного голосования
+    Параметры:
+    classifiers - классификаторы ансамбля, форма = [n_classifiers]
+    vote - str, ['classlabel', 'classprobability'], если метка classlabel, то берется argmax меток классов, если classprobability, то
+    для прогнозирования метки используется argmax сумму вероятностей
+    weighta - веса, важность классификаторов, по умолчанию None
+    """
+
+def __init__(self, classifiers, vote='classlabel', weights = None):
+    self.classifiers = classifiers
+    self.named_classifiers = {key: value for key, value in _name_estimators(classifiers)}
+    self.vote = vote
+    self.weights = weights
+
+def fit(self, X, y):
+    """Выполнить подгонку классификаторов
+    Х - разреженная матрица с тренировочными образцами [n_samples, n_features]
+    y - вектор целевых меток классов [n_samples]
+
+    Возвращает объект self
+    """
+    # Использовать объект LabelEncoder, чтобы гарантировать, что
+    # метки классов начинаются с 0, что важно для
+    # вызова np.argmax в self.predict
+
+    self.lablenc_ = LabelEncoder()
+    self.lablenc_.fit(y)
+    self.classes_ = self.lablenc_.classes_
+    self.classifiers_ = []
+    for clf in self.classifiers:
+        fitted_clf = clone(clf).fit(X, self.lablenc_.transform(y))
+        self.classifiers_.append(fitted_clf)
+
+    return self
+
+def predict(self, X):
+    """Спрогнозировать метки классов для Х
+    
+    """
 
 mv_clf = MajorityVoteClassifier(classifiers=[pipe1,clf2, pipe3])
