@@ -116,7 +116,7 @@ class MajorityVoteClassifier(BaseEstimator, ClassifierMixin):
         """
 
         probas = np.asarray([clf.predict_proba(X) for clf in self.classifiers_])
-        avg_proba = np.avarage(probas, axis = 0, weights = self.weights)
+        avg_proba = np.average(probas, axis = 0, weights = self.weights)
 
         return avg_proba
 
@@ -133,3 +133,9 @@ class MajorityVoteClassifier(BaseEstimator, ClassifierMixin):
             return out
 
 mv_clf = MajorityVoteClassifier(classifiers=[pipe1,clf2, pipe3])
+clf_labels+= ['Мажоритарное голосование']
+all_clf = [pipe1, clf2, pipe3, mv_clf]
+
+for clf, label in zip(all_clf, clf_labels):
+    scores = cross_val_score(estimator=clf, X=X_train, y=y_train, cv=10, scoring='roc_auc')
+    print("ROC_AUC: %0.2f (+/- %0.2f) [%s]" % (scores.mean(), scores.std(), label))
