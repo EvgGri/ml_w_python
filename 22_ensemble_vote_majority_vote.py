@@ -90,7 +90,46 @@ def fit(self, X, y):
 
 def predict(self, X):
     """Спрогнозировать метки классов для Х
-    
+    Х - разреженная матрица с тренировочными образцами [n_samples, n_features]
+
+    Возвращает
+    maj_vote - массив [n_samples], спрогнозированные метки классов
     """
+    if self.vote == 'probability':
+        maj_vote = np.argmax(self.predict_proba(X), axis = 1)
+    else: #Голосование 'classlabel'
+
+        #Аккумулировать результаты из вызовов clf.predict
+        predictions = np.asarray([clf.predict(X) for clf in self.classifiers_]).T
+        maj_vote = np.apply_along_axis(lambda x: np.argmax(np.bincount(x, weights = self.weights)), axis = 1, arr = predictions)
+    maj_vote = self.lablenc_.inverse_transform(maj_vote)
+    return maj_vote
+
+def predict_proba(self, X):
+    """Спрогнозировать вероятность класса для Х
+
+    Параметры:
+    Х - тренировочные векторы, [n_samples, n_features]
+
+    Возвращает:
+    avg_proba - взвешенная средняя вероятность для каждого класса в рассчете на образец, [n_samples, n_classes]
+    """
+
+    probas = np.asarray([clf.predict_proba(X) for clf in self.classifiers_])
+    avg_proba = np.avarage(probas, axis = 0, weights = self.weights)
+
+    return avg_proba
+
+def get_params(self, deep = True):
+    """Получить имена парметров классификатора для GridSearch"""
+
+    if not deep:
+        return super(MajorityVoteClassifier, self).get_params(deep = False)
+    else:
+        out = self.named_classifiers.copy()
+        for name, step in six.iteritems(self.named_classifiers):
+            for key, value in six.iteritems(step.get_params(deep = True)):
+                out['%s %s' % (name, key)] = value
+        return out
 
 mv_clf = MajorityVoteClassifier(classifiers=[pipe1,clf2, pipe3])
