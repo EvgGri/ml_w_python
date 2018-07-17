@@ -188,3 +188,14 @@ for idx, clf, tt in zip(product([0,1],[0,1]), all_clf, clf_labels):
 plt.text(-3.5, -4.5, s='Главная компонента №1', ha='center', va='center', fontsize=12)
 plt.text(-10.5, 4.5, s='Главная компонента №2', ha='center', va='center', fontsize=12, rotation=90)
 plt.show()
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- Какие параметры использовали алгоритмы?
+mv_clf.get_params()
+# -=-=-=-=-=-=-=-=- Тонкая настройка гиперпараметров модели
+from sklearn.model_selection import GridSearchCV
+params = {'decisiontreeclassifier__max_depth': [1,2], 'pipeline-1__clf__C': [0.001, 0.1, 100.0]}
+grid = GridSearchCV(estimator=mv_clf, param_grid=params, cv=10, scoring='roc_auc')
+# Поиск по сетке параметров, вычисленные в результате 10-блочной перекрестной проверки
+grid.fit(X_train, y_train)
+
+for params, mean_score, scores in grid.grid_scores_:
+    print("%0.3f +/- %0.2f %r" % (mean_score, scores.std() / 2, params))
