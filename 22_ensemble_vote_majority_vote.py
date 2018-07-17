@@ -199,3 +199,5 @@ grid.fit(X_train, y_train)
 
 for params, mean_score, scores in grid.grid_scores_:
     print("%0.3f +/- %0.2f %r" % (mean_score, scores.std() / 2, params))
+print("Лучшие параметры: %s" % grid.best_params_)
+print("Верность: %.2f" % grid.best_score_)
