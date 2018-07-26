@@ -18,3 +18,72 @@
 # В отличие от описаной здесь процедуры бустинга, алгоритм AdaBoost для тренировки слабых учеников использует полный тренировочный набор, где
 # тренировочные образцы взвешиваются повторно в каждой итерации с целью построения сильного классификатора, который обучается на ошибках
 # предыдущих слабых классификаторов в ансамбле.
+
+# Разбивка на тренировочное и тестовое подмножество
+
+import pandas as pd
+import numpy as np
+
+from sklearn.datasets import load_wine
+data = load_wine()
+list(data.target_names)
+
+# url='https://archive.ics.uci.edu/ml/machine-learning-databases/wine/wine.data'
+# df_wine=pd.read_csv(url, header=None)
+
+df_wine = pd.DataFrame(data.data)
+
+df_wine.columns=['Алкоголь','Яблочная кислота','Зола',
+                 'Щелочность золы','Магний','Всего фенола','Флаваноиды',
+                 'Фенолы нефлаваноидные','Проантоцианины','Интенсивность цвета',
+                 'Оттенок','OD280 / OD315 разбавленных вин','Пролин']
+
+df_wine['Метка класса'] = pd.DataFrame(data.target)
+
+# Выберем только классы 2 и 3
+df_wine = df_wine[df_wine['Метка класса'] != 0]
+
+# Разбиение на train и test выборки
+# X, y = df_wine[['Алкоголь','Яблочная кислота','Зола','Щелочность золы','Магний','Всего фенола','Флаваноиды','Фенолы нефлаваноидные',
+#                 'Проантоцианины','Интенсивность цвета','Оттенок','OD280 / OD315 разбавленных вин','Пролин']].values,df_wine['Метка класса'].values
+
+X, y = df_wine[['Алкоголь', 'Оттенок']].values, df_wine['Метка класса'].values
+
+# Приведем метки классов в двоичный формат
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
+le = LabelEncoder()
+y = le.fit_transform(y)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=1)
+
+
+# В sikit-learn алгоритм уже реализован алгоритм бэггинг-классификатора BaggingClassifier. В данном примере в качестве базового
+# классификатора мы будем использовать  неподрезанное дерево решений и создадим ансамбль из 500 деревьев решений, подогнанных на
+# разных бутстрап-выборках из тренировочного набора.
+
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.tree import DecisionTreeClassifier
+
+tree = DecisionTreeClassifier(criterion='entropy', max_depth=1, random_state=0)
+ada = AdaBoostClassifier(base_estimator=tree, n_estimators=500, learning_rate=0.1, random_state=0)
+
+from sklearn.metrics import accuracy_score
+tree = tree.fit(X_train, y_train)
+y_train_pred = tree.predict(X_train)
+y_test_pred = tree.predict(X_test)
+
+tree_train = accuracy_score(y_train, y_train_pred)
+tree_test = accuracy_score(y_test, y_test_pred)
+
+print('Верность дерева решений на тренировочном/тестовом наборах %.3f/%.3f' % (tree_train, tree_test))
+
+# Модель хорошо работает на тренировочном наборе данных, но на тестовом точность значительно ниже, что свидетельствует о переобучении.
+
+ada = ada.fit(X_train, y_train)
+y_train_pred = ada.predict(X_train)
+y_test_pred = ada.predict(X_test)
+
+ada_train = accuracy_score(y_train, y_train_pred)
+ada_test = accuracy_score(y_test, y_test_pred)
+
+print('Верность дерева решений на тренировочном/тестовом наборах %.3f/%.3f' % (ada_train, ada_test))
