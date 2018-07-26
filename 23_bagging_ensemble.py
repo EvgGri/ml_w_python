@@ -26,7 +26,7 @@ df_wine.head()
 df_wine['Метка класса'] = pd.DataFrame(data.target)
 
 # Выберем только классы 2 и 3
-df_wine = df_wine[df_wine['Метка класса'] != 1]
+df_wine = df_wine[df_wine['Метка класса'] != 0]
 
 df_wine.describe()
 # Размер data frame'a
