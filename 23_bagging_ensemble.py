@@ -81,7 +81,7 @@ import matplotlib.pyplot as plt
 x_min = X_train[:,0].min()-1
 x_max = X_train[:,0].max()+1
 y_min = X_train[:,1].min()-1
-y_max = X_train[:,1].max()-1
+y_max = X_train[:,1].max()+1
 
 xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.1), np.arange(y_min, y_max, 0.1))
 f, axarr = plt.subplots(nrows=1, ncols=2, sharex='col', sharey='row', figsize=(8,3))
