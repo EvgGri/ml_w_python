@@ -57,9 +57,7 @@ y = le.fit_transform(y)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=1)
 
 
-# В sikit-learn алгоритм уже реализован алгоритм бэггинг-классификатора BaggingClassifier. В данном примере в качестве базового
-# классификатора мы будем использовать  неподрезанное дерево решений и создадим ансамбль из 500 деревьев решений, подогнанных на
-# разных бутстрап-выборках из тренировочного набора.
+# В sikit-learn алгоритм уже реализован
 
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
@@ -77,7 +75,7 @@ tree_test = accuracy_score(y_test, y_test_pred)
 
 print('Верность дерева решений на тренировочном/тестовом наборах %.3f/%.3f' % (tree_train, tree_test))
 
-# Модель хорошо работает на тренировочном наборе данных, но на тестовом точность значительно ниже, что свидетельствует о переобучении.
+# Как видно, пенек дерева решений показывает тенденцию к недообучению под тренировочные данные, в отличие от неподрезанного дерева решений
 
 ada = ada.fit(X_train, y_train)
 y_train_pred = ada.predict(X_train)
@@ -87,3 +85,32 @@ ada_train = accuracy_score(y_train, y_train_pred)
 ada_test = accuracy_score(y_test, y_test_pred)
 
 print('Верность дерева решений на тренировочном/тестовом наборах %.3f/%.3f' % (ada_train, ada_test))
+# Как видно, модель AdaBoost правильно идентифицирует все метки классов тренировочного набора и также показывает слегка улучшенное качество
+# на тестовом наборе, по сравнению с пеньком дерева решения. Однако мы видим, что вместе с нашей попыткой уменьшить смещение, мы привнесли
+# дополнительную дисперсию.
+
+# Визуализация на первых двух компонентах
+import matplotlib.pyplot as plt
+
+x_min = X_train[:,0].min()-1
+x_max = X_train[:,0].max()+1
+y_min = X_train[:,1].min()-1
+y_max = X_train[:,1].max()+1
+
+xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.1), np.arange(y_min, y_max, 0.1))
+f, axarr = plt.subplots(nrows=1, ncols=2, sharex='col', sharey='row', figsize=(18,7))
+
+for idx, clf, tt in zip([0,1], [tree, ada], ["Дерево решений","АдаБуст"]):
+    clf.fit(X_train, y_train)
+    Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+    axarr[idx].contourf(xx, yy, Z, alpha=0.3)
+    axarr[idx].scatter(X_train[y_train==0, 0], X_train[y_train==0, 1], c='blue', marker='^')
+    axarr[idx].scatter(X_train[y_train==1, 0], X_train[y_train==1, 1], c='red', marker='o')
+    axarr[idx].set_title(tt)
+
+axarr[0].set_ylabel('Главная компонента №1', fontsize=12)
+# axarr[1].set_ylabel('Главная компонента №2', fontsize=12)
+plt.text(10, -1, s='Главная компонента №2', ha='center', va='center', fontsize=12)
+plt.show()
+# В итоге, зачастую, используя ансамблевые методы, мы получаем скромный прирост в точности, но значимый прирост в сложности вычислений. 
