@@ -62,3 +62,4 @@ def preprocessor(text):
 # сохраненные emoticons в конец обработанной последовательности символов документа, кроме того, мы удалили из эмограмм символ носа '-'
 
 preprocessor(df.loc[23,'review'][:50])
+df['review'] = df['review'].apply(preprocessor)
