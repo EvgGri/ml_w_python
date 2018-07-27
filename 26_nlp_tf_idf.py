@@ -44,9 +44,19 @@ print(tfidf.fit_transform(count.fit_transform(docs)).toarray())
 
 # Прочитаем базы отзывов о кинофильмах
 import numpy as np
-np.random.seed(0)
-df=df.reindex(np.random.permutation(df.index))
-df.to_csv('./data/movie_data.csv', index=False)
-
+import pandas as pd
 df=pd.read_csv('./data/movie_data.csv')
-df.head(3)
+
+df.loc[22,'review'][-50:]
+# В отзыве содержится лишняя информация, удалим все лишние за исключением символов-эмоций (эмограммы) вроде ':)'
+# Для этого воспользуемся библиотекой регулярных выражений Python re
+import re
+def preprocessor(text):
+    text=re.sub('<[^>]*>','', text)
+    emoticons = re.findall('(?::|;|=)(?:-)?(?:\)|\(|D|P)', text)
+    text = re.sub('[\W]+', ' ', text.lower()) + ' '.join(emoticons).replace('-','')
+    return(text)
+# <[^>]*>' - в первом регулярном выражении мы попытались убрать всю html-разметку из текста
+# после этого мы ищем эмограммы, которые мы временно сохранили, как emoticons
+# Затем регулярным выражением [\W+] мы удалили из текста все несловарные символы, преобразовали текст в строчные буквы и добавили временно
+# сохраненные emoticons в конец обработанной последовательности символов документа.
