@@ -22,7 +22,7 @@ bag = count.fit_transform(docs)
 print(count.vocabulary_)
 print(bag.toarray())
 
-# -=-=-=-=-=-= Рассмотрим реализацию tf-idf в библиотеке scikit-learn
+# -=-=-=-=-=-= Рассмотрим реализацию tf-idf в библиотеке scikit-learn -=-=-=-=-=-=-=
 
 # Существует класс-преобразователь коэффициентов tf-idf, который в качестве входных данных принимает из векторизатора частотностей
 # CountVectorizer исходные частоты терминов и преобразовывает их в серию tf-idf'ов:
@@ -39,3 +39,14 @@ print(tfidf.fit_transform(count.fit_transform(docs)).toarray())
 # В scikit-learn вычисление tf-idf(t,d)=tf(t,d) x (idf(t,d) - 1)
 # Перед вычислением tf-idf обычно происходит нормализация исходных частот документов, в scikit-learn по умолчанию используется
 # L2-регуляризация, которая вектор признаков делит на его L2-норму, возращая вектор длиной 1.
+
+# -=-=-=-=-=-=-= Очистка текстовых данных -=-=-=-=-=-=-=
+
+# Прочитаем базы отзывов о кинофильмах
+import numpy as np
+np.random.seed(0)
+df=df.reindex(np.random.permutation(df.index))
+df.to_csv('./data/movie_data.csv', index=False)
+
+df=pd.read_csv('./data/movie_data.csv')
+df.head(3)
