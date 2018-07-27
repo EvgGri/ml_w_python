@@ -38,3 +38,21 @@ df.to_csv('./data/movie_data.csv', index=False)
 
 df=pd.read_csv('./data/movie_data.csv')
 df.head(3)
+
+# Модель мешка слов
+
+# Представим текст, как числовой вектор признаков:
+# 1. Сделаем из всего набора документов словарь уникальных лексем (tokens) - например, слов
+# 2. построим из каждого документа вектор признаков, содержащий частоности вхождений каждого слова в определенный документ
+
+# Модель мешка слов на основе частотности слов
+# Метод fit_transform создает словарь и преобразовывает 3 элемента в разреженные векторы признаков
+import numpy as np
+from sklearn.feature_extraction.text import CountVectorizer
+count = CountVectorizer()
+docs = np.array(['The sun is shining', 'The weather is sweet', 'The sun is shining and the weather is sweet, and one and one is too'])
+bag = count.fit_transform(docs)
+print(count.vocabulary_)
+
+# Векторы признаков, которые мы только что создали
+print(bag.toarray())
