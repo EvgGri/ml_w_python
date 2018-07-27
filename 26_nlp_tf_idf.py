@@ -20,9 +20,22 @@ count = CountVectorizer()
 docs = np.array(['The sun is shining', 'The weather is sweet', 'The sun is shining and the weather is sweet, and one and one is too'])
 bag = count.fit_transform(docs)
 print(count.vocabulary_)
-
+print(bag.toarray())
 
 # -=-=-=-=-=-= Рассмотрим реализацию tf-idf в библиотеке scikit-learn
 
 # Существует класс-преобразователь коэффициентов tf-idf, который в качестве входных данных принимает из векторизатора частотностей
 # CountVectorizer исходные частоты терминов и преобразовывает их в серию tf-idf'ов:
+from sklearn.feature_extraction.text import TfidfTransformer
+tfidf=TfidfTransformer()
+np.set_printoptions(precision=2)
+print(tfidf.fit_transform(count.fit_transform(docs)).toarray())
+
+# Как мы видели ранее, слову is имело наибольшую частоту термина в 3-ем документе, при этом оно было наиболее встречающимся словом.
+# Однако, после преобразования того же вектора признаков в tf-idf мы видим, что в документе 3 слову is теперь поставлен в соответствие
+# относительно малый tf-idf(0.39), поскольку оно также содержится в документах 1 и 2 и поэтому в ряд ли будет содержать какую-то полезную
+# отличительную информацию.
+
+# В scikit-learn вычисление tf-idf(t,d)=tf(t,d) x (idf(t,d) - 1)
+# Перед вычислением tf-idf обычно происходит нормализация исходных частот документов, в scikit-learn по умолчанию используется
+# L2-регуляризация, которая вектор признаков делит на его L2-норму, возращая вектор длиной 1.
