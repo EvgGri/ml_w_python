@@ -89,7 +89,13 @@ tokenizer_porter("Example of the splitting")
 # Воспользуемся набором из 127 анлийских стоп-слов, имеющихся в библиотеке NLTK
 import nltk
 nltk.download('stopwords')
-nltk.download('all')
+# nltk.download('all')
 # Загрузим лингвистический корпус Университета Брауна
 from nltk.corpus import brown
 brown.words()
+
+from nltk.corpus import stopwords
+stop = stopwords.words('english')
+[w  for w in tokenizer_porter('a runner likes running and runs a lot')[-10:] if w not in stop]
+
+# -=-=-=-=-=-=-= Тренировка лонистической регрессионной модели для задачи классификации документов -=-=-=-=-=-=-=
