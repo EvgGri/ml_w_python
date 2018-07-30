@@ -5,3 +5,20 @@
 # модель с использованием небольших мини-пакетов документов.
 
 # Определим функцию лексемизации tokenizer, которая очищает необработанные текстовые данные.
+
+# Прочитаем базы отзывов о кинофильмах
+import numpy as np
+from nltk.corpus import stopwords
+import pandas as pd
+df=pd.read_csv('./data/movie_data.csv')
+stop = stopwords.words('english')
+
+# В отзыве содержится лишняя информация, удалим все лишние за исключением символов-эмоций (эмограммы) вроде ':)'
+# Для этого воспользуемся библиотекой регулярных выражений Python re
+import re
+def tokenizer(text):
+    text=re.sub('<[^>]*>','', text)
+    emoticons = re.findall('(?::|;|=)(?:-)?(?:\)|\(|D|P)', text.lower())
+    text = re.sub('[\W]+', ' ', text.lower()) + ' '.join(emoticons).replace('-','')
+    tokenized = [w for w in text.split() if w not in stop]
+    return tokenized
