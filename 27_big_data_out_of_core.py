@@ -36,3 +36,42 @@ next(stream_docs(path='./data/movie_data.csv'))
 # Определем функцию get_minibatch, которая принимает поток документов из функции stream_docs и возвращает отдельно взятое число докуметов,
 # заданных в параметре size
 def get_minibatch(doc_stream, size):
+    docs, y = [], []
+    try:
+        for _ in range(size):
+            text, label = next(doc_stream)
+            docs.append(text)
+            y.append(label)
+
+    except StopIteration:
+            return None, None
+    return docs, y
+
+# Мы не можем использовать векторизатор частотностей CountVectorizer для обучения вне ядря, т.к. он потребует наличия в памяти полного словаря.
+# Кроме того, векторизатор tf-idf'ов TfidfVectorizer должен поддерживать в памяти все векторы признаков тренировочного набора данных, для того
+# чтобы вычислить обратные частоты документов.
+# Но существует еще один векторизатор для обработки текст HashingVectorizer, он независим от данных и хэширует признаки на основе 32-рязрядного
+# алогритма MurmushHash.
+# Инициализируем хеширующий векторизатор HashingVectorizer нашей функцией tokenizer и определим число признаков равным 2^21.
+# Мы повторно инициализировали логистический регрессионный классификатор, задав параметр потерь loss классификатора SGDClassifier равным log.
+from sklearn.feature_extraction.text import HashingVectorizer
+from sklearn.linear_model import SGDClassifier
+vect = HashingVectorizer(decode_error = 'ignore',
+                         n_features=(2 ** 21),
+                         preprocessor=None,
+                         tokenizer=tokenizer)
+
+clf = SGDClassifier(loss='log', random_state=1, n_iter=1)
+doc_stream = stream_docs(path='./data/movie_data.csv')
+
+# Настоив вспомогательные функции, приступим к обучению вне ядра
+import pyprind
+pbar=pyprind.ProgBar(45)
+classes = np.array([0,1])
+for _ in range(45):
+    X_train, y_train = get_minibatch(doc_stream, size = 1000)
+    if not X_train:
+        break
+    X_train=vect.transform(X_train)
+    clf.partial_fit(X_train, y_train, classes=classes)
+    pbar.update()
