@@ -64,7 +64,9 @@ vect = HashingVectorizer(decode_error = 'ignore',
 clf = SGDClassifier(loss='log', random_state=1, n_iter=1)
 doc_stream = stream_docs(path='./data/movie_data.csv')
 
-# Настоив вспомогательные функции, приступим к обучению вне ядра
+# Настоив вспомогательные функции, приступим к обучению вне ядра.
+# PyPrind - следим за ходом выполнения обучения. Мы инициализировали индикатор выполнения работы 45 итерациями, в следующем
+# цикле for мы выполнили терации по 45 мини-пакетам документов, где каждый мини-пакет состоит из 1000 документов.
 import pyprind
 pbar=pyprind.ProgBar(45)
 classes = np.array([0,1])
