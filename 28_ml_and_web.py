@@ -109,6 +109,7 @@ import os
 
 dest = os.path.join('movielassifier', 'pkl_objects')
 
+# Создадим каталог классификатора movieclassifier, куда мы позже будем охранять файлы и данные для нашего веб-приложения.
 if not os.path.exists(dest):
     os.makedirs(dest)
 pickle.dump(stop, open(os.path.join(dest, 'stopwords.pkl'),'wb'), protocol=4)
