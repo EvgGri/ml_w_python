@@ -107,9 +107,10 @@ clf=clf.partial_fit(X_test, y_test)
 import pickle
 import os
 
-dest = os.path.join('movielassifier', 'pkl_objects')
+dest = os.path.join('movieclassifier', 'pkl_objects')
 
 # Создадим каталог классификатора movieclassifier, куда мы позже будем охранять файлы и данные для нашего веб-приложения.
+# В каталоге movieclassifier
 if not os.path.exists(dest):
     os.makedirs(dest)
 pickle.dump(stop, open(os.path.join(dest, 'stopwords.pkl'),'wb'), protocol=4)
