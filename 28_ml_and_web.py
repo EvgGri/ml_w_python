@@ -122,4 +122,12 @@ pickle.dump(stop, open(os.path.join(dest, 'stopwords.pkl'),'wb'), protocol=4)
 pickle.dump(clf, open(os.path.join(dest, 'classifier.pkl'),'wb'), protocol=4)
 
 # Нам не нужно консервировать хэширующий векторизатор HashingVectorizer, поскольку он не требует выполнения подгонки. Вместо этого можно
-# создать новый сценарный файл Python, из которого можно импортировать векторизатор в наш текущий сеанс Python. 
+# создать новый сценарный файл Python, из которого можно импортировать векторизатор в наш текущий сеанс Python.
+
+import numpy as np
+label = {0: 'negative', 1: 'positive'}
+
+example = ['I love this movie']
+X = vect.transform(example)
+
+print('Прогноз: %s\nВероятность: %.2f%%' % (label[clf.predict(X)[0]], np.max(clf.predict_proba(X))*100))

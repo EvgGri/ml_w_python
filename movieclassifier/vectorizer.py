@@ -5,5 +5,9 @@ import re
 import os
 import pickle
 
-cur_dir = os.path.dirname(__file__)
-stop = pickle.load(open(os.path.join(cur_dir, 'pkl_objects', 'stopwords.pkl'), 'rb')
+cur_dir = os.path.dirname(os.path.realpath('__file__'))
+# Костыль, нужно понять, как правильно задавать путь
+cur_dir +='/movieclassifier/'
+print(cur_dir)
+
+stop = pickle.load(open(os.path.join(cur_dir, 'pkl_objects', 'stopwords.pkl'), 'rb'))
