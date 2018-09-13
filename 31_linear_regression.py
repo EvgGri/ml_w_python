@@ -178,3 +178,18 @@ lasso = ElasticNet(alpha=1.0, l1_ratio=0.5)
 
 # Добавим в задачу простой регрессии с одной объясняющей переменной квадратичного члена (d=2) и сравнения полинома с линейной подгонкой
 # Добавления члена с полиномом второй степени:
+from sklearn.preprocessing import PolynomialFeatures
+
+X = np.array([258.0, 270.0, 294.0,
+              320.0, 342.0, 368.0,
+              396.0, 446.0, 480.0,
+              586.0]) [:, np.newaxis]
+
+y = np.array([236.4, 234.4, 252.8,
+              298.6, 314.2, 342.2,
+              360.8, 368.0, 391.2,
+              390.8])
+
+lr = LinearRegression()
+pr = LinearRegression()
+quadratic = PolynomialFeatures(degree=2)
