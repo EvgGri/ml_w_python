@@ -74,3 +74,28 @@ ransac = RANSACRegressor(LinearRegression(),
                          residual_threshold=5.0,
                          random_state=0)
 ransac.fit(X,y)
+# max_trials - максиимальное число итераций
+# min_samples - минимальное число случайно отобранных образцов
+# residual_metric - параметр метрики остатков, лямбда функция рассчитывает абсолютные вертикальные расстояния между точками образцов и
+# подогнанной линией
+# residual_threshold - разрешаем включать в подмножество не-выбросов образцы с вертикальным расстоянием не больше 5 единиц
+
+# После подгонки модели RANSAC получим не-выбросы и выбросы из подогнанной линейной регрессионой модели RANSAC и построим совместный график с
+# линейной подгонкой
+inlier_mask = ransac.inlier_mask_
+outlier_mask = np.logical_not(inlier_mask)
+line_X = np.arange(3,10,1)
+line_y_ransac = ransac.predict(line_X[:, np.newaxis])
+plt.scatter(X[inlier_mask], y[inlier_mask], c='blue', marker='o', label='Не-выбросы')
+plt.scatter(X[outlier_mask], y[outlier_mask], c='red', marker='s', label='Выбросы')
+plt.plot(line_X, line_y_ransac, color='red')
+plt.xlabel('Среднее число комнат [RM]')
+plt.ylabel('Средняя цена в тыс. долл. [MEDV]')
+plt.legend(loc='upper left')
+plt.show()
+# Если мы распечатаем наклон (угловой коэффициент) и точку пересечения модели, увидим, что линия линейной регрессии отличается от подгонки,
+# которую мы получили в предыдущем разделе без модели RANSAC
+print('Наклон: %.3f' % ransac.estimator_.coef_[0])
+print('Пересечение: %.3f' % ransac.estimator_.intercept_)
+
+# Оценка качества работы линейных регрессионных моделей
