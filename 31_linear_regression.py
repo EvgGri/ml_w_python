@@ -193,3 +193,21 @@ y = np.array([236.4, 234.4, 252.8,
 lr = LinearRegression()
 pr = LinearRegression()
 quadratic = PolynomialFeatures(degree=2)
+
+X_quad = quadratic.fit_transform(X)
+
+# Подгонка простой линейной регрессии
+lr.fit(X, y)
+X_fit = np.arange(250,600,10) [:, np.newaxis]
+y_lin_fit = lr.predict(X_fit)
+
+# Множественная регрессионная модель на преобразованных признаках для полиномиальной регресии
+pr.fit(X_quad, y)
+y_quad_fit = pr.predict(quadratic.fit_transform(X_fit))
+
+# График результатов
+plt.scatter(X, y, label='тренировочные точки')
+plt.plot (X_fit , y_lin_fit, label='линейная подгонка', linestyle='--')
+plt.plot (X_fit , y_quad_fit, label='квадратичная подгонка')
+plt.legend(loc='upper left')
+plt.show()
