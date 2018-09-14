@@ -47,5 +47,5 @@ lin_regplot(X,y,slr)
 
 lin_regplot(X[sort_idx], y[sort_idx], tree)
 plt.xlabel('log(% населения с более низким статусом [LSTAT])')
-plt.ylabel('$\sqrt{Цена в тыс. долл. [MEDV]}$')
+plt.ylabel('Цена в тыс. долл. [MEDV]')
 plt.show()
