@@ -24,4 +24,33 @@ X_cubic = cubic.fit_transform(X)
 
 # Линейная подгонка
 import numpy as np
+from sklearn.metrics import r2_score
 X_fit = np.arange(X.min(), X.max(), 1)[:, np.newaxis]
+regr = regr.fit(X, y)
+y_lin_fit = regr.predict(X_fit)
+linear_r2 = r2_score(y, regr.predict(X))
+
+# Квадратичная подгонка
+regr = regr.fit(X_quad, y)
+y_quad_fit = regr.predict(quadratic.fit_transform(X_fit))
+quadratic_r2 = r2_score(y, regr.predict(X_quad))
+
+# Кубическая подгонка
+regr = regr.fit(X_cubic, y)
+y_cubic_fit = regr.predict(cubic.fit_transform(X_fit))
+cubic_r2 = r2_score(y, regr.predict(X_cubic))
+
+# Строим график с результатами
+import matplotlib.pyplot as plt
+plt.scatter(X, y, label='Тренировочеые точки', color='lightgray')
+plt.plot(X_fit, y_lin_fit, label='линейная (d=1), $R^2=%.2f$' % linear_r2, color='blue', lw=2, linestyle=':')
+plt.plot(X_fit, y_quad_fit, label='квадратичная (d=2), $R^2=%.2f$' % quadratic_r2, color='red', lw=2, linestyle='-')
+plt.plot(X_fit, y_cubic_fit, label='кубическая (d=3), $R^2=%.2f$' % cubic_r2, color='green', lw=2, linestyle='--')
+plt.xlabel('% населения с более низким статусом [LSTAT]')
+plt.ylabel('Цена в тыс. долл. [MEDV]')
+plt.legend(loc='upper right')
+plt.show()
+# Как видно на получившемся графике, кубическая подгонка захватывает связь перемнных лучше, чем линейная и квадратичная.
+# Однако мы должны понимать, что добавления все большего числа полиномиальных признаков увеличивает сложность модели и поэтому
+# увеличивает шанс ее переобучения
+# Поэтому на практике рекомендуется проверять работу модели на отдельном тестовом наборе данных.
