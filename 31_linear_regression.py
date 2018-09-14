@@ -211,3 +211,11 @@ plt.plot (X_fit , y_lin_fit, label='линейная подгонка', linestyl
 plt.plot (X_fit , y_quad_fit, label='квадратичная подгонка')
 plt.legend(loc='upper left')
 plt.show()
+y_lin_pred = lr.predict(X)
+y_quad_pred = pr.predict(X_quad)
+print('\nТренировочная MSE линейная: %.3f, квадратичная %.3f' %
+      (mean_squared_error(y, y_lin_pred), mean_squared_error(y, y_quad_pred))
+      )
+print('\nТренировочная R^2 линейная: %.3f, квадратичная %.3f' %
+      (r2_score(y, y_lin_pred), r2_score(y, y_quad_pred))
+      )
