@@ -81,4 +81,8 @@ forest = RandomForestRegressor(n_estimators=1000,
 forest.fit(X_train, y_train)
 y_train_pred = forest.predict(X_train)
 y_test_pred = forest.predict(X_test)
-print('MSE тренировка: %.3f, тестирование: %.3f' % mean_squared_error(y_train, y_pred), )
+
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
+print('\nMSE тренировка: %.3f, тестирование: %.3f' % (mean_squared_error(y_train, y_train_pred),mean_squared_error(y_test, y_test_pred)))
+print('\nR^2 тренировка: %.3f, тестирование: %.3f' % (r2_score(y_train, y_train_pred),r2_score(y_test, y_test_pred)))
