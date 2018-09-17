@@ -49,3 +49,26 @@ lin_regplot(X[sort_idx], y[sort_idx], tree)
 plt.xlabel('log(% населения с более низким статусом [LSTAT])')
 plt.ylabel('Цена в тыс. долл. [MEDV]')
 plt.show()
+# -=-=-=-=-=-=-=-=-=- Регрессия на основе случайного леса
+# Случайный лес - ансамблевый метод, который объединяет 2 и более деревьев решений.
+# Как правило, единственный настроечный параметр в случаном лесу - это количество деревьев.
+# Базовый алгоритм случайного леса для регрессии практически идентичен алгоритму случайного леса для классификации.
+# Разница состоит в том, что для роста отдельных деревьев решений мы используем критерий MSE и предсказанная целевая переменная
+# вычисляется как усредненное предсказание по всем деревьям решений.
+
+
+# Набор данных, содержащий информацию о зданиях в пригороде Бостона.
+import pandas as pd
+url='./data/BostonHousing.xls'
+
+df=pd.read_excel(url, index_col=None)
+df.columns = ['CRIM','ZN','INDUS','CHAS','NOX','RM','AGE','DIS','RAD','TAX','PTRATIO','B','LSTAT','MEDV']
+df.head()
+
+
+# Воспользуемся всеми признаками из набора данныз BostonHousing
+X = df.iloc[:, :-1].values
+y = df['MEDV'].values
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=1)
