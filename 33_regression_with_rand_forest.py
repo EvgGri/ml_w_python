@@ -72,3 +72,13 @@ y = df['MEDV'].values
 
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=1)
+
+from sklearn.ensemble import RandomForestRegressor
+forest = RandomForestRegressor(n_estimators=1000,
+                               criterion="mse",
+                               random_state=1,
+                               n_jobs=-1)
+forest.fit(X_train, y_train)
+y_train_pred = forest.predict(X_train)
+y_test_pred = forest.predict(X_test)
+print('MSE тренировка: %.3f, тестирование: %.3f' % mean_squared_error(y_train, y_pred), )
