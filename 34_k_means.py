@@ -7,4 +7,13 @@
 # категориальных признаков.
 
 # Метод к-средних хорошо выполняет идентификацию кластеров сферической формы, но недостаток метода состоит в том, что нам необходимо
-# указывать число кластеров к.
+# указывать число кластеров к. Оптимальное число кластеров можно определить с помощью метода локтя и силуэтного графика.
+
+from sklearn.datasets import make_blobs
+X, y = make_blobs(n_samples=150, n_features=2, centers=3, cluster_std=0.5, shuffle=True, random_state=0)
+
+import matplotlib.pyplot as plt
+plt.scatter(X[:,0], X[:,1], c='blue', marker='o', s=50)
+
+plt.grid()
+plt.show()
