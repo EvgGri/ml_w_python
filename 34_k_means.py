@@ -164,3 +164,45 @@ plt.show()
 # Визуальный анализ силуэтного графика позволяет быстро определить`размеры разных кластеров и идентифицировать кластеры, которые содержат
 # выбросы. На приведенном графике видно, что силуэтные коэффициенты даже близко не находятся рядом с 0, что может служить инидикатором
 # хорошего объединения в кластеры.
+
+
+# -=-=-=-=-=-=-=-=- Рассмотрим пример плохого распределения по кластерам
+
+# Силуэтный коэффициент доступен как функция silhouette_samples из модуля metric
+km = KMeans(n_clusters=2, init='k-means++', n_init=10, max_iter=300, tol=1e-04, random_state=0)
+y_km = km.fit_predict(X)
+
+import numpy as np
+from matplotlib import cm
+from sklearn.metrics import silhouette_samples
+
+cluster_labels = np.unique(y_km)
+n_clusters = cluster_labels.shape[0]
+silhouette_vals = silhouette_samples(X, y_km, metric='euclidean')
+
+# silhouette_scores = numpy.mean(silhouette_samples()) - вычисляет средний силуэтный коэффициент
+
+y_ax_lower, y_ax_upper = 0, 0
+yticks = []
+for i, c in enumerate(cluster_labels):
+    c_silhouette_vals = silhouette_vals[y_km == c]
+    c_silhouette_vals.sort()
+    y_ax_upper += len(c_silhouette_vals)
+    color = cm.jet(float(i)/n_clusters) # float(i) для совместимости с Python 2.7
+    plt.barh(range(y_ax_lower, y_ax_upper),
+             c_silhouette_vals,
+             height=1.0,
+             edgecolor='none',
+             color=color)
+    yticks.append((y_ax_lower + y_ax_upper)/2)
+    y_ax_lower += len(c_silhouette_vals)
+
+silhouette_avg = np.mean(silhouette_vals)
+plt.axvline(silhouette_avg,
+            color='red',
+            linestyle='--')
+
+plt.yticks(yticks, cluster_labels + 1)
+plt.ylabel('Кластер')
+plt.xlabel('Силуэтный коэффициент')
+plt.show()
