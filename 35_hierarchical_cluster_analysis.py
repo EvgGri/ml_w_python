@@ -80,3 +80,30 @@ import matplotlib.pyplot as plt
 plt.tight_layout()
 plt.ylabel('Евклидово расстояние')
 plt.show()
+
+# -=-=-=-=-=-=-=-=-= Прикрепление дендограмм к теплокарте
+# При помощи атрибута add_axes создается новый объект figure задается позиция осей X и Y, ширина и высота дендограммы.
+fig = plt.figure(figsize=(8,8), facecolor='white')
+axd = fig.add_axes([0.09, 0.1, 0.2, 0.6])
+row_dendr = dendrogram(row_clusters, orientation='right')
+# для matplotlib >= v1.5.1, использовать orientation='left'
+
+# Далее переупорядочить данные в нашей исходной таблице данных DataFrame согласно меткам кластеризации, к которым можно обратиться из
+# объекта дендограммы, являющегося по существу словарем Python, по ключу leaves.
+df_rowclust = df.ix[row_dendr['leaves'][::-1]]
+
+# Далее строим теплокарту из переупорядоченной таблицы данных DataFrame и расположим ее прямо напротив дендограммы:
+axm = fig.add_axes([0.23, 0.1, 0.6, 0.6])
+cax = axm.matshow(df_rowclust, interpolation='nearest', cmap='hot_r')
+
+# Изменим визуализацию теплокарты, удалив деление осей и убрав линии сетки. Кроме того, добавить цветную полосу и назначить меткам
+# делений соотвественно оси X и Y имена признаков и образцов.
+axd.set_xticks([])
+axd.set_yticks([])
+for i in axd.spines.values():
+    i.set_visible(False)
+fig.colorbar(cax)
+axm.set_xticklabels([''] + list(df_rowclust.columns))
+axm.set_yticklabels([''] + list(df_rowclust.index))
+plt.show()
+# Порядок следования строк в теплокарте отражает кластеризацию образцов в дендограмме.
