@@ -38,3 +38,23 @@ labels = ['ID_0','ID_1','ID_2','ID_3','ID_4']
 X = np.random.random_sample([5,3])*10
 df = pd.DataFrame(X, columns=variables, index=labels)
 print(df[:10])
+
+# -=-=-=-=-=-=- Вычисление матрицы расстояний с использованием spatial.distance библиотеки SciPy
+from scipy.spatial.distance import pdist, squareform
+row_dist = pd.DataFrame(squareform(pdist(df, metric='euclidean')), columns=labels, index=labels)
+print(row_dist)
+
+# -=-=-=-=-=-=- Применение алгоритма агломеративной кластеризации на основе метода полной связи, воспользовавшись функцией linkage,
+# которая возвращает так называемую матрицу связи
+from scipy.cluster.hierarchy import linkage
+# help(linkage)
+# Неправильный подход в этом случае - это использовать квардратную матрицу расстояний
+# Правильный подход использовать сжатая матрица расстояний или используется матрица входных образцов
+
+# Неправильный подход, используется квадратная матрица расстояний
+row_clusters=linkage(row_dist, method='complete', metric='euclidean')
+# Правильный подход, используется сжатая матрица расстояний
+row_clusters=linkage(pdist(df, metric='euclidean'), method='complete')
+
+# Правильный подход, используется матрица входных образцов
+row_clusters=linkage(df.values, metric='euclidean', method='complete')
