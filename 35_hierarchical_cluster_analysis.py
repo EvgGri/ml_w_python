@@ -58,3 +58,25 @@ row_clusters=linkage(pdist(df, metric='euclidean'), method='complete')
 
 # Правильный подход, используется матрица входных образцов
 row_clusters=linkage(df.values, metric='euclidean', method='complete')
+
+# Преобразование таблицы в DataFrame
+pd.DataFrame(row_clusters, columns=['метка строки 1', 'метка строки 2', 'расстояние', 'число элементов в кластере'],
+             index=['кластер %d' % (i+1) for i in range(row_clusters.shape[0])])
+# Матрица связей состоит из нескольких строк, где каждая строка представляет собой одно объединение.
+# Первый и второй столбцы обозначают наиболее различающихся членов в каждом кластере, третий столбец говорит о расстоянии между этими членами.
+# Последний столбец возвращает число членов в каждом кластере.
+
+# Теперь можно визуализировать результаты в виде дендограммы
+from scipy.cluster.hierarchy import dendrogram
+# делаем дендограмму черной (часть 1)
+# from scipy.cluster.hierarchy import set_link_color_palette
+# set_link_color_palette(['black'])
+row_dendr = dendrogram(row_clusters, labels=labels)
+# row_dendr = dendrogram(row_clusters, labels=labels,
+# делаем дендограмму черно (часть 2)
+# color_threshold=np.inf)
+
+import matplotlib.pyplot as plt
+plt.tight_layout()
+plt.ylabel('Евклидово расстояние')
+plt.show()
