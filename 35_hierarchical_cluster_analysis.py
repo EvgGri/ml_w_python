@@ -69,12 +69,12 @@ pd.DataFrame(row_clusters, columns=['метка строки 1', 'метка с�
 # Теперь можно визуализировать результаты в виде дендограммы
 from scipy.cluster.hierarchy import dendrogram
 # делаем дендограмму черной (часть 1)
-# from scipy.cluster.hierarchy import set_link_color_palette
-# set_link_color_palette(['black'])
-row_dendr = dendrogram(row_clusters, labels=labels)
-# row_dendr = dendrogram(row_clusters, labels=labels,
+from scipy.cluster.hierarchy import set_link_color_palette
+set_link_color_palette(['black'])
+# row_dendr = dendrogram(row_clusters, labels=labels)
+row_dendr = dendrogram(row_clusters, labels=labels, color_threshold=np.inf)
 # делаем дендограмму черно (часть 2)
-# color_threshold=np.inf)
+
 
 import matplotlib.pyplot as plt
 plt.tight_layout()
