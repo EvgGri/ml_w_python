@@ -25,3 +25,19 @@ X, y = make_moons(n_samples=200, noise=0.05, random_state=0)
 import matplotlib.pyplot as plt
 plt.scatter(X[:,0], X[:,1])
 plt.show()
+
+# Начнем с применения алгоритма к-средних и кластеризации с полной связью, чтобы увидеть, сможет ли один из алгоритмов кластеризации,
+# обсуждавшийся ранее успешно идентифицировать фигуры полумесяца, как отдельные кластеры.
+
+f, (ax1, ax2) = plt.subplots(1,2, figsize=(8,3))
+
+from sklearn.cluster import KMeans
+km = KMeans(n_clusters=2, random_state=0)
+y_km = km.fit_predict(X)
+
+ax1.scatter(X[y_km==0,0],
+            X[y_km==0,1],
+            c='lightblue',
+            marker='o',
+            s=40,
+            label='Кластер №1')
