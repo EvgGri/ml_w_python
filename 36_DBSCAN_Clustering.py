@@ -41,3 +41,35 @@ ax1.scatter(X[y_km==0,0],
             marker='o',
             s=40,
             label='Кластер №1')
+
+ax1.scatter(X[y_km==1,0],
+            X[y_km==1,1],
+            c='red',
+            marker='s',
+            s=40,
+            label='Кластер №2')
+
+ax1.set_title('Кластеризация методом К-средних')
+
+from sklearn.cluster import AgglomerativeClustering
+ac = AgglomerativeClustering(n_clusters=2, affinity='euclidean', linkage='complete')
+
+y_ac = ac.fit_predict(X)
+
+ax2.scatter(X[y_ac==0,0],
+            X[y_ac==0,1],
+            c='lightblue',
+            marker='o',
+            s=40,
+            label='Кластер №1')
+
+ax2.scatter(X[y_ac==1,0],
+            X[y_ac==1,1],
+            c='red',
+            marker='s',
+            s=40,
+            label='Кластер №2')
+
+ax2.set_title('Агломеративная кластеризация')
+plt.legend()
+plt.show()
