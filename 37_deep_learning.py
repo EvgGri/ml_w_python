@@ -105,3 +105,15 @@ ax[0].set_xticks([])
 ax[0].set_yticks([])
 plt.tight_layout()
 plt.show()
+
+# Чтобы сохранить данные в csv формате, чтобы использовать их в программах, которые не поддерживают специального байтового формата, необходимо:
+# np.savetxt('train_img.csv', X_train, fmt='%i', delimniter=',')
+# np.savetxt('train_labels.csv', y_train, fmt='%i', delimniter=',')
+# np.savetxt('test_img.csv', X_test, fmt='%i', delimniter=',')
+# np.savetxt('test_labels.csv', y_test, fmt='%i', delimniter=',')
+
+# Чтобы зыгрузить их назад в питон необходимо выполнить следующий код:
+# X_train = np.genfromtxt('train_img.csv', dtype=int, delimiter=',')
+# y_train = np.genfromtxt('train_labels.csv', dtype=int, delimiter=',')
+# X_test = np.genfromtxt('test_img.csv', dtype=int, delimiter=',')
+# y_test = np.genfromtxt('test_labels.csv', dtype=int, delimiter=',')
