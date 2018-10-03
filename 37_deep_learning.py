@@ -61,6 +61,11 @@ def load_mnist(path, kind='train'):
     return images, labels
 
 X_train , y_train = load_mnist('/Users/grigorev-ee/Work/AnacondaProjects/My_projects/ml_w_python/data/mnist/', kind = 'train')
+
+print('Тренировка - строки: %d, столбцы: %d' % (X_train.shape[0], X_train.shape[1]))
+
+X_test , y_test = load_mnist('/Users/grigorev-ee/Work/AnacondaProjects/My_projects/ml_w_python/data/mnist/', kind = 't10k')
+print('Тестирование - строки: %d, столбцы: %d' % (X_test.shape[0], X_test.shape[1]))
 # load_mnist возвращает 2 массива, первый, это n x m мерный массив NumPy, где n - число образцов, m - число признаков.
 # Тренировочный набор состоит из 60 000 тренировочных цифр, тестовый набор содержит 10 000 образцов.
 # Изображения в наборе данных MNIST представляют собой растры размеров 28 х 28 пикселей, в котором каждый пиксел представлен значением
@@ -73,3 +78,30 @@ X_train , y_train = load_mnist('/Users/grigorev-ee/Work/AnacondaProjects/My_proj
 # Значение параметра '>II' имеет две части, первая > - обратный порядое байтов, I - беззнаковое целое число.
 # magic, n = struct.unpack('>II', lbpath.read(8))
 # labels = np.fromfile(lbpath, dtype = np.uint8)
+
+# Чтобы получить представление о том, как выглядят изображения в MNIST, покажем примеры цифр 0-9 в наглядном виде после приведения
+# 784-пиксельных векторов из нашей матрицы признаков в исходные изображения в формате 28 х 28, которые можно вывести на экран при помощи
+# функции imshow библиотеки matplotlib.
+
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots(nrows=2, ncols=5, sharex=True, sharey=True,)
+ax = ax.flatten()
+for i in range(10):
+    img = X_train[y_train==i][0].reshape(28,28)
+    ax[i].imshow(img, cmap='Greys', interpolation='nearest')
+ax[0].set_xticks([])
+ax[0].set_yticks([])
+plt.tight_layout()
+plt.show()
+
+# В дополнении к этому стоит также построить график с повторными примерами одной и той же цифры, чтобы подчеркнуть, насколько в действительности
+# эти примеры отличаются и дополняют друг друга.
+fig, ax = plt.subplots(nrows=5, ncols=5, sharex=True, sharey=True,)
+ax = ax.flatten()
+for i in range(25):
+    img = X_train[y_train==7][i].reshape(28,28)
+    ax[i].imshow(img, cmap='Greys', interpolation='nearest')
+ax[0].set_xticks([])
+ax[0].set_yticks([])
+plt.tight_layout()
+plt.show()
