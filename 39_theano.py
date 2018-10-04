@@ -82,6 +82,7 @@ x=T.fmatrix('x')
 w=theano.shared(np.array([[0.0, 0.0, 0.0]], dtype=theano.config.floatX))
 
 z=x.dot(w.T)
+# Мы определили переменную update, где мы объявили, что хотим обновлять массив w значением 1.0 после каждой итерации цикла for
 update=[[w,w+1.0]]
 
 # скомпилировать
@@ -92,3 +93,78 @@ data=np.array([[1,2,3]], dtype=theano.config.floatX)
 
 for i in range(5):
     print('z%d:' %i, net_input(data))
+
+# Еще один ловкий трюк заключается в том, чтобы использовать переменную givens для вставки значений в граф перед его компиляцией.
+# Используя этот подход, мы сможем сократить количество перемещений из оперативной памяти в через цп в гп, ускоряя работу алгоритмов
+# обучения, в которых используются совместно используемые (общие) переменные. Если в компиляторе theano.function  использовать
+# параметр inputs, то данные будут перемещаться из ЦП в ГП многократно, например, если мы многократно (эпохи) будем выполнять
+# итерации по набору данных во время градиентного спуска.
+# Используя givens, мы можем держать набор данных на ГП, если он помещается в его памяти.
+
+# Инициализация
+data=np.array([[1,2,3]], dtype=theano.config.floatX)
+x=T.fmatrix('x')
+w=theano.shared(np.asarray([[0.0, 0.0, 0.0]], dtype=theano.config.floatX))
+z=x.dot(w.T)
+update=[[w, w+1.0]]
+
+# Скомпилировать
+net_input=theano.function(inputs=[],updates=update, givens={x: data}, outputs=z)
+
+# Исполнить
+for i in range(5):
+    print('z:', net_input())
+# Отрибут givens - это словарь Python, который ставит в соответствие имени переменной фактический обзор Python. Мы назначили это имя, когда
+# определяли fmatrix
+
+# -=-=-=-=-=-=-=-=- Линейная регрессия
+# Построим регрессию по методу наименьших квадратов (МНК, OLS).
+# Создадим небольшой одномерный массив с 10 тренировочными образцами.
+X_train=np.asarray([[0.0], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0], [9.0]], dtype=theano.config.floatX)
+y_train=np.asarray([1.0, 1.3, 3.1, 2.0, 5.0, 6.3, 6.6, 7.4, 8.0, 9.0], dtype=theano.config.floatX)
+# Когда мы конструируем массивы NumPy, мы используем theano.config.floatX, с тем, чтобы произвольно переключаться туда и обратно между ЦП и ГП.
+
+# Дадее реализуем тренировочную функцию для извлечения весов линейной регрессионной модели с использованием функции стоимости в виде
+# суммы квадратичных ошибок. Отметим, что w0-это узел смещения.
+import theano
+from theano import tensor as T
+import numpy as np
+
+def train_linreg(X_train, y_train, eta, epochs):
+
+    costs = []
+
+    # Инициализировать массивы
+    eta0=T.fscalar('eta0')
+    y=T.fvector(name='y')
+    X=T.matrix(name='X')
+    w=theano.shared(np.zeros(shape=(X_train.shape[1]+1),dtype=theano.config.floatX), name='w')
+
+    # Вычислить стоимость
+    net_input=T.dot(X, w[1:]) + w[0]
+    errors=y-net_input
+    cost=T.sum(T.pow(errors,2))
+
+    # Выполнить корректировку градиента
+    # Функция grad автоматически вычисляет производную выражения относительно его параметров
+    gradient=T.grad(cost,wrt=w)
+    update=[(w, w-eta0 * gradient)]
+
+    # Скомпилировать модель
+    train=theano.function(inputs=[eta0], outputs=cost, updates=update, givens={X: X_train, y: y_train,})
+
+    for _ in range(epochs):
+        costs.append(train(eta))
+
+    return costs, w
+
+# После того, как мы реализовали тренировочную функцию, натренируем нашу линейную регрессионную модель и посмотрим на значения функции
+# стоимости в виде суммы квадратичных ошибок (SSE), чтобы проверить ее сходимость:
+import matplotlib.pyplot as plt
+costs, w = train_linreg(X_train, y_train, eta=0.001, epochs=10)
+plt.plot(range(1, len(costs)+1), costs)
+plt.tight_layout()
+plt.xlabel('Эпохи')
+plt.ylabel('Стоимость')
+plt.show()
+# Как видно, алгоритм сходится уже после 5-ой эпохи
