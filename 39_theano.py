@@ -76,3 +76,19 @@ print('Сумма столбца:', calc_sum(ary))
 # памят, она назначет псевдонимы соотвествующим буферам. Далее рассмотрим переменную shared, предоставляющая возможность распределять
 # большие объекты (массивы) и предоставлять нескольким функциям чтения и записи право доступа, в результате чего после компиляции мы
 # также имеем возможность выполнять обновление на этих объектах.
+
+# Инициализация
+x=T.fmatrix('x')
+w=theano.shared(np.array([[0.0, 0.0, 0.0]], dtype=theano.config.floatX))
+
+z=x.dot(w.T)
+update=[[w,w+1.0]]
+
+# скомпилировать
+net_input=theano.function(inputs=[x], updates=update,outputs=z)
+
+# Исполнить
+data=np.array([[1,2,3]], dtype=theano.config.floatX)
+
+for i in range(5):
+    print('z%d:' %i, net_input(data))
