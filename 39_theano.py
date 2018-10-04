@@ -168,3 +168,18 @@ plt.xlabel('Эпохи')
 plt.ylabel('Стоимость')
 plt.show()
 # Как видно, алгоритм сходится уже после 5-ой эпохи
+
+# Функция для предсказаний на основе входных признаков
+def predict_linreg(X, w):
+    Xt=T.matrix(name='X')
+    net_input=T.dot(Xt, w[1:]) + w[0]
+    predict=theano.function(inputs=[Xt], givens={w: w}, outputs=net_input)
+
+    return predict(X)
+
+# Построим график подгонки линейной регрессии на тренировочных данных
+plt.scatter(X_train, y_train, marker='s', s=50)
+plt.plot(range(X_train.shape[0]), predict_linreg(X_train, w), color='gray', marker='o', markersize=4, linewidth=3)
+plt.xlabel('x')
+plt.ylabel('y')
+plt.show()
