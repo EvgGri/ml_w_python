@@ -80,5 +80,13 @@ sgd=SGD(lr=0.001, decay=1e-7, momentum=.9)
 # с использованием функции softmax
 model.compile(loss='categorical_crossentropy', optimizer=sgd)
 
+# Just disables the warning, doesn't enable AVX/FMA // игнорирование ошибки
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 # После компиляции модели можно натренировать ее путем вызова метода fit
 # Здесь мы используем мини-пакетный стохастический градиент с размером пакета 300 тренировочных образцов из расчета на пакет.
+# Мы тренируем MLP на 50 эпох и можем отслеживать оптимизацию функции стоимости, установив параметр verbose=1.
+# Параметр validation_split используется для резервирования 10% данных для проверки после каждой эпохи, с тем чтобы мы могли удостовериться, что модель
+# не находится в переподогнанном состоянии во время тренировки.
+model.fit(X_train, y_train_ohe,  epochs=50, batch_size=300, verbose=1, validation_split=0.1)
