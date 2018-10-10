@@ -90,3 +90,18 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # Параметр validation_split используется для резервирования 10% данных для проверки после каждой эпохи, с тем чтобы мы могли удостовериться, что модель
 # не находится в переподогнанном состоянии во время тренировки.
 model.fit(X_train, y_train_ohe,  epochs=50, batch_size=300, verbose=1, validation_split=0.1)
+# Предскажим метки классов на тренировочном наборе
+y_train_pred=model.predict_classes(X_train, verbose=0)
+print('Первые метки классов: ', y_train_pred[:10])
+
+# Выведем аккуратность модели
+train_acc=np.sum(y_train==y_train_pred, axis=None)/X_train.shape[0]
+print('Верность на тренировочном наборе: %.2f%%' % (train_acc*100))
+
+# Предскажим метки классов на тестовом наборе
+y_test_pred=model.predict_classes(X_test, verbose=0)
+print('Первые метки классов: ', y_test_pred[:10])
+
+# Выведем аккуратность модели
+test_acc=np.sum(y_test==y_test_pred, axis=None)/X_test.shape[0]
+print('Верность на тренировочном наборе: %.2f%%' % (test_acc*100))
