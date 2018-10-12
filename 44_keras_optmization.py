@@ -14,7 +14,13 @@ import numpy as np
 from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation
-from keras.optimizers import SGD
+# В Keras реализован быстрый вариант градиентного спуска – стохастический градиентный спуск (СГС) и два более продвинутых метода оптимизации:
+# RMSprop и Adam. В обоих участвует понятие импульса в дополнение к ускорению, используемому в СГС.
+# В результате достигается более быстрая сходимость, правда, ценой увеличения объема вычислений.
+# Полный перечень оптимизаторов, поддерживаемых Keras, приведен на странице https://keras.io/optimizers/.
+# До сих пор мы по умолчанию выбирали оптимизатор СГС. Теперь попробуем два других. Для этого всего­то и надо что изменить пару строк:
+# from keras.optimizers import SGD
+from keras.optimizers import SGD, RMSprop, Adam
 from keras.utils import np_utils
 
 # Для воспроизводимости результатов
@@ -25,7 +31,9 @@ NB_EPOCH = 250
 BATCH_SIZE = 128
 VERBOSE = 1
 NB_CLASSES = 10 # количество результатов = числу цифр
-OPTIMIZER = SGD() # СГС-оптимизатор, обсуждается ниже в этой главе N_HIDDEN = 128
+# OPTIMIZER = SGD() # СГС-оптимизатор, обсуждается ниже в этой главе N_HIDDEN = 128
+# OPTIMIZER = RMSprop() # оптимизатор
+OPTIMIZER = Adam() # оптимизатор
 N_HIDDEN = 128
 VALIDATION_SPLIT=0.2 # какая часть обучающего набора зарезервирована для контроля
 DROPOUT = 0.3
