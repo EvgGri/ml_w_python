@@ -84,7 +84,7 @@ class LeNet:
 
 		return model
 
-# network and training
+# сеть и ее обучение
 NB_EPOCH = 20
 BATCH_SIZE = 128
 VERBOSE = 1
@@ -95,28 +95,28 @@ IMG_ROWS, IMG_COLS = 28, 28 # input image dimensions
 NB_CLASSES = 10  # number of outputs = number of digits
 INPUT_SHAPE = (1, IMG_ROWS, IMG_COLS)
 
-# data: shuffled and split between train and test sets
+# данные: перетасованы и разбиты на обучающий и тестовый набор
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
 K.set_image_dim_ordering("th")
 
-# consider them as float and normalize
+# рассматриваем как числа с плавающей точкой и нормируем
 X_train = X_train.astype('float32')
 X_test = X_test.astype('float32')
 X_train /= 255
 X_test /= 255
 
-# we need a 60K x [1 x 28 x 28] shape as input to the CONVNET
+# нам нужна форма 60K x [1 x 28 x 28], подаваемая на вход сверточной сети
 X_train = X_train[:, np.newaxis, :, :]
 X_test = X_test[:, np.newaxis, :, :]
 
 print(X_train.shape[0], 'train samples')
 print(X_test.shape[0], 'test samples')
 
-# convert class vectors to binary class matrices
+# преобразуем векторы классов в бинарные матрицы классов
 y_train = np_utils.to_categorical(y_train, NB_CLASSES)
 y_test = np_utils.to_categorical(y_test, NB_CLASSES)
 
-# initialize the optimizer and model
+# инициализировать оптимизатор и модель
 model = LeNet.build(input_shape=INPUT_SHAPE, classes=NB_CLASSES)
 model.compile(loss="categorical_crossentropy", optimizer=OPTIMIZER,
 	metrics=["accuracy"])
@@ -129,9 +129,10 @@ score = model.evaluate(X_test, y_test, verbose=VERBOSE)
 print("\nTest score:", score[0])
 print('Test accuracy:', score[1])
 
-# list all data in history
+# перечислить все данные в истории
 print(history.history.keys())
-# summarize history for accuracy
+
+# построить график изменения верности
 plt.plot(history.history['acc'])
 plt.plot(history.history['val_acc'])
 plt.title('model accuracy')
@@ -139,7 +140,8 @@ plt.ylabel('accuracy')
 plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
 plt.show()
-# summarize history for loss
+
+# построить график изменения потери
 plt.plot(history.history['loss'])
 plt.plot(history.history['val_loss'])
 plt.title('model loss')
@@ -147,3 +149,8 @@ plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
 plt.show()
+
+# Как видим, время заметно выросло, теперь на каждую итерацию обучения сети уходит ~134 секунды вместо ~1–2 секунд для сети из главы 1.
+# Однако и максимальная верность теперь равна 99.96%.
+
+# Из графиков верности и потери видно, что для достижения верности 99.2% было бы достаточно всего 4–5 итераций.
