@@ -31,6 +31,8 @@ from keras.layers.convolutional import Deconv2D as Conv2DTranspose
 # Наконец, параметр strides=(2, 2) определяет шаг обработки.
 keras.layers.MaxPooling2D(pool_size=(2, 2), strides=(2, 2))
 
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- Непосредственно реализация
+
 from keras import backend as K
 from keras.models import Sequential
 from keras.layers.convolutional import Conv2D
