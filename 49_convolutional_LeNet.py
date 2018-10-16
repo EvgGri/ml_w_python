@@ -8,4 +8,16 @@
 # Последние слои полносвязные – как в традиционном МСП со скрытыми слоями и функцией активации softmax в выходном слое.
 
 # Для определения сети LeNet в Keras используется модуль двумерной сверточной сети:
-keras.layers.convolutional.Conv2D( lters, kernel_size, padding='valid')
+from tensorflow import keras
+
+from keras.layers.convolutional import Conv2D
+keras.layers.convolutional.Conv2D(lters, kernel_size, padding='valid')
+
+# Здесь  lters – число сверточных ядер (например, размерность выхода), kernel_size – одно целое число или кортеж (либо список)
+# из двух целых чисел, задающих ширину и высоту двумерного окна свертки (если указано одно число, то ширина и высота одинаковы),
+# а padding='same' означает, что используется дополнение. Существу- ет два режима: padding='valid' означает, что свертка вычисляется
+# только там, где фильтр целиком помещается в области входа, поэтому выход оказывается меньше входа, а padding='same' – что размер
+# выхода такой же (same), как размер входа, для чего входная область дополняется нулями по краям.
+
+from keras.layers import Convolution2D as Conv2D
+from keras.layers.convolutional import Deconv2D as Conv2DTranspose
