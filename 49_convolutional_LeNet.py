@@ -11,13 +11,43 @@
 from tensorflow import keras
 
 from keras.layers.convolutional import Conv2D
-keras.layers.convolutional.Conv2D(lters, kernel_size, padding='valid')
+filters=2
+kernel_size=3
+# keras.layers.convolutional.Conv2D( lters, kernel_size, padding='valid')
+keras.layers.Conv2D(filters, kernel_size, padding='valid')
 
-# Здесь  lters – число сверточных ядер (например, размерность выхода), kernel_size – одно целое число или кортеж (либо список)
+# Здесь  filters – число сверточных ядер (например, размерность выхода), kernel_size – одно целое число или кортеж (либо список)
 # из двух целых чисел, задающих ширину и высоту двумерного окна свертки (если указано одно число, то ширина и высота одинаковы),
-# а padding='same' означает, что используется дополнение. Существу- ет два режима: padding='valid' означает, что свертка вычисляется
+# а padding='same' означает, что используется дополнение. Существует два режима: padding='valid' означает, что свертка вычисляется
 # только там, где фильтр целиком помещается в области входа, поэтому выход оказывается меньше входа, а padding='same' – что размер
 # выхода такой же (same), как размер входа, для чего входная область дополняется нулями по краям.
 
 from keras.layers import Convolution2D as Conv2D
 from keras.layers.convolutional import Deconv2D as Conv2DTranspose
+
+# keras.layers.pooling.MaxPooling2D(pool_size=(2, 2), strides=(2, 2))
+# Здесь pool_size=(2, 2) – кортеж из двух целых чисел, определяющих коэффициенты уменьшения изображения по вертикали и по горизонтали.
+# Таким образом, (2, 2) означает, что изображение уменьшается вдвое в обоих направлениях.
+# Наконец, параметр strides=(2, 2) определяет шаг обработки.
+keras.layers.MaxPooling2D(pool_size=(2, 2), strides=(2, 2))
+
+from keras import backend as K
+from keras.models import Sequential
+from keras.layers.convolutional import Conv2D
+from keras.layers.convolutional import MaxPooling2D
+from keras.layers.core import Activation
+from keras.layers.core import Flatten
+from keras.layers.core import Dense
+from keras.datasets import mnist
+from keras.utils import np_utils
+from keras.optimizers import SGD, RMSprop, Adam
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Затем определяется сеть LeNet
+#de ne the ConvNet
+class LeNet:
+    @staticmethod
+    def build(input_shape, classes):
+        model = Sequential()
+        # CONV => RELU => POOL
