@@ -48,9 +48,41 @@ X_test /= 255
 
 # В нашей сети будет 32 сверточных фильтра размера 3 × 3. Размер выхода такой же, как размер входа, т. е. 32 × 32, а в качестве функции активации
 # используется ReLU, вносящая нелинейность. Далее следует операция max­пулинга с размером блока 2 × 2 и прореживание с коэффициентом 25%:
+
 # сеть
 model = Sequential()
 model.add(Conv2D(32, (3, 3), padding='same', input_shape=(IMG_ROWS, IMG_COLS, IMG_CHANNELS)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
+
+# Следующий элемент конвейера – плотный слой с 512 нейронами и функцией активации ReLU, а за ним прореживание с коэффициентом 50% и выходной слой softmax­
+# классификации с 10 классами,по одному на категорию:
+
+model.add(Flatten())
+model.add(Dense(512))
+model.add(Activation('relu'))
+model.add(Dropout(0.5))
+model.add(Dense(NB_CLASSES))
+model.add(Activation('softmax'))
+model.summary()
+
+# Определив нейросеть, мы можем перейти к обучению модели. В данном случае мы выделяем контрольный набор, помимо обучающего и тестового.
+# Обучающий набор нужен для обучения модели, контрольный – для выбора наилучшего подхода к обучению, а тес­товый – для проверки обученной модели на новых данных.
+# обучение
+model.compile(loss='categorical_crossentropy', optimizer=OPTIM, metrics=['accuracy'])
+model.fit(X_train, Y_train, batch_size=BATCH_SIZE, epochs=NB_EPOCH, validation_split=VALIDATION_SPLIT, verbose=VERBOSE)
+score = model.evaluate(X_test, Y_test,
+batch_size=BATCH_SIZE, verbose=VERBOSE)
+print("Test score:", score[0]) print('Test accuracy:', score[1])
+
+# Сохраним еще архитектуру глубокой сети:
+
+# сохранить модель
+model_json = model.to_json()
+open('cifar10_architecture.json', 'w').write(model_json)
+# и веса, вычисленные в результате обучения сети
+model.save_weights('cifar10_weights.h5', overwrite=True)
+
+# Выполним программу. Сеть достигает верности на тестовом наборе 66.4% при 20 итерациях.
+# Мы также построили графики вер- ности и потери и сохранили сеть методом model.summary().
