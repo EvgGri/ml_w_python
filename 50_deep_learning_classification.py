@@ -72,9 +72,9 @@ model.summary()
 # обучение
 model.compile(loss='categorical_crossentropy', optimizer=OPTIM, metrics=['accuracy'])
 model.fit(X_train, Y_train, batch_size=BATCH_SIZE, epochs=NB_EPOCH, validation_split=VALIDATION_SPLIT, verbose=VERBOSE)
-score = model.evaluate(X_test, Y_test,
-batch_size=BATCH_SIZE, verbose=VERBOSE)
-print("Test score:", score[0]) print('Test accuracy:', score[1])
+score = model.evaluate(X_test, Y_test,batch_size=BATCH_SIZE, verbose=VERBOSE)
+print("Test score:", score[0])
+print('Test accuracy:', score[1])
 
 # Сохраним еще архитектуру глубокой сети:
 
@@ -85,4 +85,4 @@ open('cifar10_architecture.json', 'w').write(model_json)
 model.save_weights('cifar10_weights.h5', overwrite=True)
 
 # Выполним программу. Сеть достигает верности на тестовом наборе 66.4% при 20 итерациях.
-# Мы также построили графики вер- ности и потери и сохранили сеть методом model.summary().
+# Мы также построили графики верности и потери и сохранили сеть методом model.summary().
