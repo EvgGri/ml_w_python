@@ -88,12 +88,11 @@ model.summary()
 # Обучающий набор нужен для обучения модели, контрольный – для выбора наилучшего подхода к обучению, а тес­товый – для проверки обученной модели на новых данных.
 # обучение
 model.compile(loss='categorical_crossentropy', optimizer=OPTIM, metrics=['accuracy'])
-model.fit(X_train, Y_train, batch_size=BATCH_SIZE, epochs=NB_EPOCH, validation_split=VALIDATION_SPLIT, verbose=VERBOSE)
 
-score = model.evaluate(X_test, Y_test,batch_size=BATCH_SIZE, verbose=VERBOSE)
-
-print("Test score:", score[0])
-print('Test accuracy:', score[1])
+# model.fit(X_train, Y_train, batch_size=BATCH_SIZE, epochs=NB_EPOCH, validation_split=VALIDATION_SPLIT, verbose=VERBOSE)
+# score = model.evaluate(X_test, Y_test,batch_size=BATCH_SIZE, verbose=VERBOSE)
+# print("Test score:", score[0])
+# print('Test accuracy:', score[1])
 
 # -=-=-=-=-=-=-=-=-=-=-=- История с графиками
 
@@ -101,6 +100,11 @@ history = model.fit(X_train, Y_train, batch_size=BATCH_SIZE, epochs=NB_EPOCH, ve
 
 # перечислить все данные в истории
 print(history.history.keys())
+
+score = model.evaluate(X_test, Y_test,batch_size=BATCH_SIZE, verbose=VERBOSE)
+
+print("Test score:", score[0])
+print('Test accuracy:', score[1])
 
 # построить график изменения верности
 plt.plot(history.history['acc'])
