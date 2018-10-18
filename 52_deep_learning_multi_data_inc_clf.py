@@ -121,8 +121,7 @@ model.compile(loss='categorical_crossentropy', optimizer=OPTIM, metrics=['accura
 # пикселей, образующихся при повороте или параллельном переносе.
 # Раскомментировать строчки ниже для генерация дополнительного набора изображений
 # print("Augmenting training set images.")
-# datagen = ImageDataGenerator(rotation_range=40, width_shift_range=0.2, height_shift_range=0.2, zoom_range=0.2,
-#                              horizontal_flip=True,  fill_mode='nearest')
+datagen = ImageDataGenerator(rotation_range=40, width_shift_range=0.2, height_shift_range=0.2, zoom_range=0.2, horizontal_flip=True,  fill_mode='nearest')
 
 # xtas, ytas = [], []
 # for i in range(X_train.shape[0]):
@@ -139,10 +138,10 @@ model.compile(loss='categorical_crossentropy', optimizer=OPTIM, metrics=['accura
 # Теперь посмотрим, что это нам дает. Мы генерируем новые изображения, а затем обучаем ту же самую сверточную сеть, что и раньше, на пополненном наборе данных.
 # Эффективности ради генератор работает параллельно обучению модели. Это позволяет пополнять набор на CPU и одновременно обучать сеть на GPU. Код показан ниже:
 # инициализировать генератор
-datagen.fit(X_train)
+# datagen.fit(X_train)
 
 # обучить
-history = model.fit_generator(datagen. ow(X_train, Y_train, batch_size=BATCH_SIZE), samples_per_epoch=X_train.shape[0], epochs=NB_EPOCH, verbose=VERBOSE)
+history = model.fit_generator(datagen.flow(X_train, Y_train, batch_size=BATCH_SIZE), samples_per_epoch=X_train.shape[0], epochs=NB_EPOCH, verbose=VERBOSE)
 score = model.evaluate(X_test, Y_test, batch_size=BATCH_SIZE, verbose=VERBOSE)
 print("Test score:", score[0])
 print('Test accuracy:', score[1])
@@ -151,7 +150,7 @@ print('Test accuracy:', score[1])
 
 # построить график изменения верности
 plt.plot(history.history['acc'])
-plt.plot(history.history['val_acc'])
+# plt.plot(history.history['val_acc'])  - почему-то не работает
 plt.title('model accuracy')
 plt.ylabel('accuracy')
 plt.xlabel('epoch')
@@ -160,7 +159,7 @@ plt.show()
 
 # построить график изменения потери
 plt.plot(history.history['loss'])
-plt.plot(history.history['val_loss'])
+# plt.plot(history.history['val_loss']) - почему-то не работает
 plt.title('model loss')
 plt.ylabel('loss')
 plt.xlabel('epoch')
