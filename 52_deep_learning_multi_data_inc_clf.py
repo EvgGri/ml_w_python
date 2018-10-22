@@ -44,7 +44,7 @@ IMG_COLS = 32
 # константы
 
 BATCH_SIZE = 128
-NB_EPOCH = 20
+NB_EPOCH = 50
 NB_CLASSES = 10
 VERBOSE = 1
 VALIDATION_SPLIT = 0.2
@@ -121,7 +121,20 @@ model.compile(loss='categorical_crossentropy', optimizer=OPTIM, metrics=['accura
 # пикселей, образующихся при повороте или параллельном переносе.
 # Раскомментировать строчки ниже для генерация дополнительного набора изображений
 # print("Augmenting training set images.")
-datagen = ImageDataGenerator(rotation_range=40, width_shift_range=0.2, height_shift_range=0.2, zoom_range=0.2, horizontal_flip=True,  fill_mode='nearest')
+# datagen = ImageDataGenerator(rotation_range=40, width_shift_range=0.2, height_shift_range=0.2, zoom_range=0.2, horizontal_flip=True,  fill_mode='nearest')
+
+datagen = ImageDataGenerator(
+        featurewise_center=False,  # set input mean to 0 over the dataset
+        samplewise_center=False,  # set each sample mean to 0
+        featurewise_std_normalization=False,  # divide inputs by std of the dataset
+        samplewise_std_normalization=False,  # divide each input by its std
+        zca_whitening=False,  # apply ZCA whitening
+        rotation_range=0,  # randomly rotate images in the range (degrees, 0 to 180)
+        width_shift_range=0.1,  # randomly shift images horizontally (fraction of total width)
+        height_shift_range=0.1,  # randomly shift images vertically (fraction of total height)
+        horizontal_flip=True,  # randomly flip images
+        vertical_flip=False)  # randomly flip images
+
 
 # xtas, ytas = [], []
 # for i in range(X_train.shape[0]):
@@ -138,7 +151,7 @@ datagen = ImageDataGenerator(rotation_range=40, width_shift_range=0.2, height_sh
 # Теперь посмотрим, что это нам дает. Мы генерируем новые изображения, а затем обучаем ту же самую сверточную сеть, что и раньше, на пополненном наборе данных.
 # Эффективности ради генератор работает параллельно обучению модели. Это позволяет пополнять набор на CPU и одновременно обучать сеть на GPU. Код показан ниже:
 # инициализировать генератор
-# datagen.fit(X_train)
+datagen.fit(X_train)
 
 # обучить
 history = model.fit_generator(datagen.flow(X_train, Y_train, batch_size=BATCH_SIZE), samples_per_epoch=X_train.shape[0], epochs=NB_EPOCH, verbose=VERBOSE)
