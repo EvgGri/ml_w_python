@@ -15,7 +15,7 @@
 # Предполагается, что есть обучающий набор данных D в предметной области, отличной от ImageNet. В D имеется 1024 входных признака
 # и 200 выходных категорий. Рассмотрим следующий фрагмент кода:
 
-from keras.applications.inception_v3 import InceptionV3 
+from keras.applications.inception_v3 import InceptionV3
 from keras.preprocessing import image
 from keras.models import Model
 from keras.layers import Dense, GlobalAveragePooling2D
@@ -23,3 +23,61 @@ from keras import backend as K
 
 # создать базовую предобученную модель
 base_model = InceptionV3(weights='imagenet', include_top=False)
+
+# Мы используем обученную сеть inception­v3 и не включаем верхние слои, потому что хотим адаптировать ее к D. В нашей модели выходным
+# будет плотный слой softmax­классификации с 200 классами. Для преобразования входных данных к форме, пригодной для этого плотного слоя,
+# применяется модуль GlobalAveragePooling2D. В действительности тензор base_model.output имеет форму (samples, channels, rows, cols),
+# если dim_ordering="th", или форму (samples, rows,cols, channels), если dim_ordering="tf", тогда как плотному слою нужна форма
+# (samples, channels). Поэтому GlobalAveragePooling2D производит усреднение по строкам rows и столбам cols.
+# Взглянув на последние четыре слоя (при include_top=True), мы увидим такие формы:
+
+# layer.name, layer.input_shape, layer.output_shape
+('mixed10', [(None, 8, 8, 320), (None, 8, 8, 768), (None, 8, 8, 768),
+(None, 8, 8, 192)], (None, 8, 8, 2048)) ('avg_pool', (None, 8, 8, 2048), (None, 1, 1, 2048))
+(' atten', (None, 1, 1, 2048), (None, 2048)) ('predictions', (None, 2048), (None, 1000))
+
+# Если же положить include_top=False, то три верхних слоя удаляются,асверхуостаетсяслой mixed10,так что модуль GlobalAveragePooling2D
+# преобразует (None, 8, 8, 2048) в (None, 2048), где каждый элемент тензора (None, 2048) – результат усреднения по соответствующему
+# подтензору размера (8, 8) тензора (None, 8, 8, 2048):
+
+# добавить глобальный слой пулинга, выполняющего пространственное усреднение
+x = base_model.output
+x = GlobalAveragePooling2D()(x) # первым добавляем полносвязный слой
+x = Dense(1024, activation='relu')(x) # а последним ReLU-слой с 200 классами
+predictions = Dense(200, activation='softmax')(x)# обучаемая модель
+model = Model(input=base_model.input, output=predictions)
+
+
+# Все сверточные слои предобучены, поэтому замораживаем их на время обучения модели в целом:
+# заморозить все сверточные слои сети InceptionV3
+for layer in base_model.layers: layer.trainable = False
+
+# Затем модель компилируется и обучается в течение нескольких периодов, чтобы обучить верхние слои:
+# откомпилировать модель (это нужно делать ПОСЛЕ того, как некоторые слои # помечены как необучаемые)
+compile the model (should be done *after* setting layers to nontrainable)
+model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
+
+# обучать модель на новых данных в течение нескольких периодов
+model.t_generator(...)
+
+# Затем мы замораживаем верхние слои модели и настраиваем нижние. В данном случае замораживаются первые 172 слоя (гиперпараметр настройки):
+
+# мы решили обучить 2 слоя inception, так что первые 172 слоя замораживаются, # а остальные размораживаются
+for layer in
+model.layers[:172]: layer.trainable = False
+
+for layer in
+model.layers[172:]: layer.trainable = True
+
+# Затем модель перекомпилируется, чтобы изменения вступили в силу:
+# используем СГС с малой скоростью обучения
+from keras.optimizers
+import SGD
+model.compile(optimizer=SGD(lr=0.0001, momentum=0.9), loss='categorical_crossentropy')
+# снова обучаем модель (на этот раз настраиваем 2 верхних слоя inception) # и верхние слои Dense
+model. t_generator(...)
+
+# Теперь мы имеем новую глубокую сеть, в которой повторно используется часть стандартной сети Inception­v3, но обучена она на данных
+# из другой предметной области посредством переноса обучения. Разумеется, для достижения приемлемой верности можно настроить много параметров.
+# Но в качестве отправной точки мы теперь используем очень большую предобученную сеть, и, следовательно, можем отказаться от полного
+# обучения на наших машинах и воспользоваться тем, что уже есть в Keras.
