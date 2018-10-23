@@ -23,7 +23,9 @@ img = image.load_img(img_path, target_size=(224, 224))
 x = image.img_to_array(img)
 x = np.expand_dims(x, axis=0)
 x = preprocess_input(x)
-# получить признаки features = model.predict(x)
+
+# получить признаки
+features = model.predict(x)
 
 # Возникает вопрос, а зачем может понадобиться выделять признаки из промежуточного слоя ГСНС?
 # Дело в том, что если сеть обучилась классифицировать изображения, то каждый ее слой обучился находить признаки,
