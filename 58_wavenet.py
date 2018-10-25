@@ -44,19 +44,47 @@
 # размерности с помощью последовательности парных операций свертки.
 
 # Генератор ГСПСС можно описать следующим кодом на Keras, имеется также другая реализация по адресу https://github.com/jacobgil/keras-dcgan
-
+# Отметим, что в этой сверточной сети нет пулинговых операций.
 def generator_model():
     model = Sequential()
+    # Теперь рассмотрим код. Первый плотный слой принимает 100­-мерный входной вектор и порождает 1024 выхода, в качестве функции
+    # активации используется tanh. Предполагается, что входные данные выбираются из равномерного распределения на от- резке [–1, 1].
     model.add(Dense(input_dim=100, output_dim=1024))
     model.add(Activation('tanh'))
+    # Следующий плотный слой порождает на выходе тензор формы 128 × 7 × 7, применяя пакетную нормировку (см. S. Ioffe, C. Szegedy
+    # «Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift», arXiv: 1502.03167, 2014) –
+    # технику, помогающую стабилизировать обучение путем нормировки входных данных, так чтобы их среднее было равно нулю, а
+    # дисперсия – единице. Эмпирически установлено, что пакетная нор- мировка во многих случаях ускоряет обучение, смягчает проблемы,
+    # вызванные неудачной инициализацией, и вообще приводит к более точным результатам.
     model.add(Dense(128*7*7))
     model.add(BatchNormalization())
     model.add(Activation('tanh'))
+    # В конвейер вставляется также модуль Reshape(), который порождает данные формы 127 × 7 × 7 (127 каналов, ширина 7, высота 7) с
+    # параметром dim_ordering равным tf, и модуль повышающей передискретизации UpSampling(), который повторяет каждый пиксель
+    # в квадрате 2 × 2.
     model.add(Reshape((128, 7, 7), input_shape=(128*7*7,)))
     model.add(UpSampling2D(size=(2, 2)))
+    # После этого идет сверточный слой, порождающий 64 фильтра с ядром размера 5 × 5 и функцией активации tanh
     model.add(Convolution2D(64, 5, 5, border_mode='same'))
     model.add(Activation('tanh'))
+    # За ним еще один модуль UpSampling() и последняя свертка с одним выходным фильтром, ядром размера 5 × 5 и функцией активации tanh.
     model.add(UpSampling2D(size=(2, 2)))
     model.add(Convolution2D(1, 5, 5, border_mode='same'))
     model.add(Activation('tanh'))
+    return model
+
+# Дискриминатор описывается следующим кодом:
+def discriminator_model():
+    model = Sequential()
+    model.add(Convolution2D(64, 5, 5, border_mode='same', input_shape=(1, 28, 28)))
+    model.add(Activation('tanh'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Convolution2D(128, 5, 5))
+    model.add(Activation('tanh'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Flatten())
+    model.add(Dense(1024))
+    model.add(Activation('tanh'))
+    model.add(Dense(1))
+    model.add(Activation('sigmoid'))
     return model
