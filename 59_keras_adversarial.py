@@ -18,6 +18,40 @@
 # Если генератор G и дискриминатор D основаны на одной и той же модели M, то их можно объединить в состязательную модель; она получает тот же вход, что и M,
 # но цели и показатели качества различны для G и D. В библиотеке определена следующая функция создания модели:
 
-dversarial_model = AdversarialModel(base_model=M, player_params=[generator.trainable_weights, discriminator.trainable_weights], player_names=["generator", "discriminator"])
+dversarial_model = AdversarialModel(base_model=M, player_params=[generator.trainable_weights, discriminator.trainable_weights],
+                                    player_names=["generator", "discriminator"])
 
 # Если генератор G и дискриминатор D основаны на разных моделях, то можно воспользоваться такой функцией:
+adversarial_model = AdversarialModel(player_models=[gan_g, gan_d], player_params=[generator.trainable_weights, discriminator.trainable_weights],
+                                     player_names=["generator", "discriminator"])
+
+# -=-=-=-=-=-=-=-=-= Рассмотрим пример вычислений для MNIST:
+
+import matplotlib as mpl
+
+# Эта строка позволяет использовать mpl без определения DISPLAY
+mpl.use('Agg')
+
+# Ниже рассматривается открытый исходный код
+# (https://github. com/bstriner/keras-adversarial/blob/master/examples/example_gan_convolutional.py).
+# В нем используется синтаксис Keras 1.x, но код работаети с Keras 2.x благодаря набору вспомогательных функций в файле legacy.py.
+# Содержимое файла legacy.py приведено в приложении, а также по адресу
+# https://github.com/bstriner/keras-adversarial/blob/ master/keras_adversarial/legacy.py
+
+# Сначала импортируется ряд модулей. Мы уже встречались со всеми, кроме LeakyReLU, специальной версии ReLU, которая допускает малый
+# градиент, когда нейрон не активен. Экспериментально показано, что в ряде случаев функция LeakyReLU может улучшить качество ПСС
+# (см. B. Xu, N. Wang, T. Chen, M. Li «Empirical Evaluation of Recti ed Activations in Convolutional Network», arXiv:1505.00853, 2014).
+from keras.layers import Dense, Reshape, Flatten, Dropout, LeakyReLU, Input, Activation, BatchNormalization
+from keras.models import Sequential, Model
+from keras.layers.convolutional import Convolution2D, UpSampling2D
+from keras.optimizers import Adam
+from keras.regularizers import l1, l2
+from keras.datasets import mnist
+
+import pandas as pd
+import numpy as np
+
+# Затем импортируются специальные модули для ПСС
+from keras.models import AdversarialModel, ImageGridCallback, simple_gan, gan_targets
+from keras_adversarial import AdversarialOptimizerSimultaneous, normal_latent_sampling, AdversarialOptimizerAlternating
+from image_utils import dim_ordering_ x, dim_ordering_input, dim_ordering_reshape, dim_ordering_un x
