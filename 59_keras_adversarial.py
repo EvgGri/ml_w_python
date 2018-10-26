@@ -52,6 +52,9 @@ import pandas as pd
 import numpy as np
 
 # Затем импортируются специальные модули для ПСС
-from keras.models import AdversarialModel, ImageGridCallback, simple_gan, gan_targets
-from keras_adversarial import AdversarialOptimizerSimultaneous, normal_latent_sampling, AdversarialOptimizerAlternating
-from image_utils import dim_ordering_ x, dim_ordering_input, dim_ordering_reshape, dim_ordering_un x
+import keras.backend as K
+from keras_adversarial.legacy import Dense, BatchNormalization, Convolution2D
+from keras_adversarial.image_grid_callback import ImageGridCallback
+from keras_adversarial import AdversarialModel, simple_gan, gan_targets
+from keras_adversarial import AdversarialOptimizerSimultaneous, normal_latent_sampling
+from image_utils import dim_ordering_fix, dim_ordering_input, dim_ordering_reshape, dim_ordering_unfix
