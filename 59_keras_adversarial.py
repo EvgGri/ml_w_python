@@ -148,3 +148,22 @@ def model_generator():
     init='glorot_uniform')(H)
     g_V = Activation('sigmoid')(H)
     return Model(g_input, g_V)
+
+# Дискриминатор очень похож на определенный нами выше. Единственное различие – модуль LeakyReLU:
+def model_discriminator(input_shape=(1, 28, 28), dropout_rate=0.5):
+    d_input = dim_ordering_input(input_shape, name="input_x")
+    nch = 512
+    H = Convolution2D(int(nch / 2), 5, 5, subsample=(2, 2),
+    border_mode='same', activation='relu')(d_input)
+    H = LeakyReLU(0.2)(H)
+    H = Dropout(dropout_rate)(H)
+    H = Convolution2D(nch, 5, 5, subsample=(2, 2),
+    border_mode='same', activation='relu')(H)
+    H = LeakyReLU(0.2)(H)
+    H = Dropout(dropout_rate)(H)
+    H = Flatten()(H)
+    H = Dense(int(nch / 2))(H)
+    H = LeakyReLU(0.2)(H)
+    H = Dropout(dropout_rate)(H)
+    d_V = Dense(1, activation='sigmoid')(H)
+    return Model(d_input, d_V)
