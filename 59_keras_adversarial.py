@@ -57,4 +57,94 @@ from keras_adversarial.legacy import Dense, BatchNormalization, Convolution2D
 from keras_adversarial.image_grid_callback import ImageGridCallback
 from keras_adversarial import AdversarialModel, simple_gan, gan_targets
 from keras_adversarial import AdversarialOptimizerSimultaneous, normal_latent_sampling
-from image_utils import dim_ordering_fix, dim_ordering_input, dim_ordering_reshape, dim_ordering_unfix
+# Не заработало, пробуем ввести функции явно
+# from image_utils import dim_ordering_fix, dim_ordering_input, dim_ordering_reshape, dim_ordering_unfix
+
+import keras.backend as K
+import numpy as np
+from keras.layers import Input, Reshape
+
+
+def dim_ordering_fix(x):
+    if K.image_dim_ordering() == 'th':
+        return x
+    else:
+        return np.transpose(x, (0, 2, 3, 1))
+
+
+def dim_ordering_unfix(x):
+    if K.image_dim_ordering() == 'th':
+        return x
+    else:
+        return np.transpose(x, (0, 3, 1, 2))
+
+
+def dim_ordering_shape(input_shape):
+    if K.image_dim_ordering() == 'th':
+        return input_shape
+    else:
+        return (input_shape[1], input_shape[2], input_shape[0])
+
+
+def dim_ordering_input(input_shape, name):
+    if K.image_dim_ordering() == 'th':
+        return Input(input_shape, name=name)
+    else:
+        return Input((input_shape[1], input_shape[2], input_shape[0]), name=name)
+
+
+def dim_ordering_reshape(k, w, **kwargs):
+    if K.image_dim_ordering() == 'th':
+        return Reshape((k, w, w), **kwargs)
+    else:
+        return Reshape((w, w, k), **kwargs)
+
+
+def channel_axis():
+    if K.image_dim_ordering() == 'th':
+        return 1
+    else:
+        return 3
+
+# Состязательные модели обучаются в ходе игры с несколькими игроками.
+# Если дана базовая модель с n целями и k игроками, то создается модель с n*k целями, в которой каждый игрок оптимизирует потерю
+# на своих целях. Кроме того, функция simple_gan порождает ПСС с заданными целями gan_targets.
+# Отметим, что в библиотеке цели для генератора и дискриминатора противоположны, это стандартная практика для ПСС:
+def gan_targets(n):
+    """
+    Стандартные цели обучения
+    [generator_fake, generator_real, discriminator_fake, discriminator_real] = [1, 0, 0, 1]
+    :param n: число примеров :return: массив целей
+    """
+    generator_fake = np.ones((n, 1))
+    generator_real = np.zeros((n, 1))
+    discriminator_fake = np.zeros((n, 1))
+    discriminator_real = np.ones((n, 1))
+    return [generator_fake, generator_real, discriminator_fake, discriminator_real]
+
+# Генератор в этом примере определяется так же, как мы видели раньше. Но теперь мы используем функциональный синтаксис –
+# каждый модуль в конвейере просто передается в качестве параметра следующему модулю.
+# Первый слой сети плотный, инициализирован в режиме glorot_normal. В этом режиме используется гауссов шум, масштабированный
+# на сумму входов и выходов из узла. Аналогично инициализированы все остальные модули. Параметр mode=2 функции BatchNormalization
+# определяет попризнаковую нормировку на основе статистики каждого пакета. Экспериментально показано, что так получаются более
+# качественные результаты:
+def model_generator():
+    nch = 256
+    g_input = Input(shape=[100])
+    H = Dense(nch * 14 * 14, init='glorot_normal')(g_input)
+    H = BatchNormalization(mode=2)(H)
+    H = Activation('relu')(H)
+    H = dim_ordering_reshape(nch, 14)(H)
+    H = UpSampling2D(size=(2, 2))(H)
+    H = Convolution2D(int(nch / 2), 3, 3, border_mode='same',
+    init='glorot_uniform')(H)
+    H = BatchNormalization(mode=2, axis=1)(H)
+    H = Activation('relu')(H)
+    H = Convolution2D(int(nch / 4), 3, 3, border_mode='same',
+    init='glorot_uniform')(H)
+    H = BatchNormalization(mode=2, axis=1)(H)
+    H = Activation('relu')(H)
+    H = Convolution2D(1, 1, 1, border_mode='same',
+    init='glorot_uniform')(H)
+    g_V = Activation('sigmoid')(H)
+    return Model(g_input, g_V)
