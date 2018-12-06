@@ -17,13 +17,12 @@
 
 # Если генератор G и дискриминатор D основаны на одной и той же модели M, то их можно объединить в состязательную модель; она получает тот же вход, что и M,
 # но цели и показатели качества различны для G и D. В библиотеке определена следующая функция создания модели:
-
-dversarial_model = AdversarialModel(base_model=M, player_params=[generator.trainable_weights, discriminator.trainable_weights],
-                                    player_names=["generator", "discriminator"])
+# adversarial_model = AdversarialModel(base_model=M, player_params=[generator.trainable_weights, discriminator.trainable_weights],
+#                                     player_names=["generator", "discriminator"])
 
 # Если генератор G и дискриминатор D основаны на разных моделях, то можно воспользоваться такой функцией:
-adversarial_model = AdversarialModel(player_models=[gan_g, gan_d], player_params=[generator.trainable_weights, discriminator.trainable_weights],
-                                     player_names=["generator", "discriminator"])
+# adversarial_model = AdversarialModel(player_models=[gan_g, gan_d], player_params=[generator.trainable_weights, discriminator.trainable_weights],
+#                                      player_names=["generator", "discriminator"])
 
 # -=-=-=-=-=-=-=-=-= Рассмотрим пример вычислений для MNIST:
 
@@ -132,17 +131,17 @@ def model_generator():
     nch = 256
     g_input = Input(shape=[100])
     H = Dense(nch * 14 * 14, init='glorot_normal')(g_input)
-    H = BatchNormalization(mode=2)(H)
+    # H = BatchNormalization(mode=2)(H)
     H = Activation('relu')(H)
     H = dim_ordering_reshape(nch, 14)(H)
     H = UpSampling2D(size=(2, 2))(H)
     H = Convolution2D(int(nch / 2), 3, 3, border_mode='same',
     init='glorot_uniform')(H)
-    H = BatchNormalization(mode=2, axis=1)(H)
+    # H = BatchNormalization(mode=2, axis=1)(H)
     H = Activation('relu')(H)
     H = Convolution2D(int(nch / 4), 3, 3, border_mode='same',
     init='glorot_uniform')(H)
-    H = BatchNormalization(mode=2, axis=1)(H)
+    # H = BatchNormalization(mode=2, axis=1)(H)
     H = Activation('relu')(H)
     H = Convolution2D(1, 1, 1, border_mode='same',
     init='glorot_uniform')(H)
@@ -167,3 +166,36 @@ def model_discriminator(input_shape=(1, 28, 28), dropout_rate=0.5):
     H = Dropout(dropout_rate)(H)
     d_V = Dense(1, activation='sigmoid')(H)
     return Model(d_input, d_V)
+
+# Далее следуют две простые функции для загрузки и нормировки набора данных MNIST:
+def mnist_process(x):
+    x = x.astype(np. oat32) / 255.0
+    return x
+
+def mnist_data():
+    (xtrain, ytrain), (xtest, ytest) = mnist.load_data()
+    return mnist_process(xtrain), mnist_process(xtest)
+
+# На следующем шаге определяется совместная модель ПСС в виде комбинации генератора и дискриминатора.
+# Заметим, что веса инициализируются функцией normal_latent_sampling, которая производит выборку из нормального распределения:
+if __name__ == "__main__":
+    # z принадлежит R^100
+    latent_dim = 100
+    # x принадлежит R^{28x28}
+    input_shape = (1, 28, 28)
+    # генератор (z -> x)
+    generator = model_generator()
+    # дискриминатор (x -> y)
+    discriminator = model_discriminator(input_shape=input_shape)
+    # ПСС (x - > yfake, yreal), z генерируется на GPU
+    gan = simple_gan(generator, discriminator, normal_latent_sampling((latent_dim,)))
+    # печатать общие сведения о моделях
+    generator.summary()
+    discriminator.summary()
+    gan.summary()
+
+# Затем в примере создается ПСС и компилируется модель, обученная с использованием оптимизатора Adam и функции потерь binary_crossentropy:
+
+# построить состязательную модель
+model = AdversarialModel(base_model=gan,player_params=[generator.trainable_weights, discriminator.trainable_weights],player_names=["generator", "discriminator"])
+model.adversarial_compile(adversarial_optimizer=AdversarialOptimizerSimultaneous(),player_optimizers=[Adam(1e-4, decay=1e-4), Adam(1e-3, decay=1e-4)], loss='binary_crossentropy')
