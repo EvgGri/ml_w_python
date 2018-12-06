@@ -102,8 +102,18 @@ vocab_size = 5000
 embed_size = 300
 window_size = 1
 
+# Затем строим последовательную модель, в которую включаем слой погружения с весами, инициализированными малыми случайными значениями.
+# Отметим, что длина входа input_length этого слоя равна числу контекстных слов. Каждое контекстное слово подается на вход слоя,
+# и веса обновляются в процессе обратного распространения. На выходе слоя получается матрица погружений контекстных слов,
+# которая усредняется в один вектор (на каждую строку входа) слоем lambda.
+# Наконец, плотный слой преобразует строки в плотный вектор размера vocab_size. Целевым словом будет то, для которого вероятность
+# идентификатора в плотном выход- ном векторе максимальна.
+
 model = Sequential()
 model.add(Embedding(input_dim=vocab_size, output_dim=embed_size, embeddings_initializer='glorot_uniform', input_length=window_size*2))
 model.add(Lambda(lambda x: K.mean(x, axis=1), output_shape=(embed_size,)))
 model.add(Dense(vocab_size, kernel_initializer='glorot_uniform',activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer="adam")
+
+# В качестве функции потерь здесь используется categorical_ crossentropy – типичный выбор для случая, когда категорий две или больше
+# (в нашем примере vocab_size).
