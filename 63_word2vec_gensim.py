@@ -37,7 +37,7 @@ class Text8Sentences(object):
         self.maxlen = maxlen
 
     def __iter__(self):
-        with open(os.path.join(DATA_DIR, "text8"), "r") as ftext:
+        with open(os.path.join(DATA_DIR, "text8"), "rb") as ftext:
             text = ftext.read().split(" ")
             sentences, words = [], []
             for word in text:
@@ -47,6 +47,8 @@ class Text8Sentences(object):
                     words.append(word)
                     yield words
 
+import gensim.downloader as api
+
 # Теперь займемся вызывающей программой. В библиотеке gensim используется имеющийся в Python механизм протоколирования для уведомления
 # о ходе обработке, поэтому для начала активируем его. В следующей строке создается экземпляр класса Text8Sentences,
 # а затем модель обучается на предложениях из на- бора данных. Мы задали размер векторов погружения 300 и рассматриваем
@@ -55,7 +57,8 @@ class Text8Sentences(object):
 # По умолчанию создается модель CBOW, но это можно изменить, задать параметр sg=1:
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 DATA_DIR = "./data/"
-sentences = Text8Sentences(os.path.join(DATA_DIR, "text8"), 50)
+# sentences = Text8Sentences(os.path.join(DATA_DIR, "text8"), 50)
+sentences = api.load('text8')
 model = w2v.Word2Vec(min_count=1)
 model.build_vocab(sentences)
 model = word2vec.Word2Vec(sentences, size=300, min_count=30)
