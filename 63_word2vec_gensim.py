@@ -57,11 +57,12 @@ import gensim
 # Размер окна по умолчанию равен 5, поэтому контекстом для слова wi будут слова wi­5, wi­4, wi­3, wi­2, wi­1, wi+1, wi+2, wi+3, wi+4, wi+5.
 # По умолчанию создается модель CBOW, но это можно изменить, задать параметр sg=1:
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
-DATA_DIR = "./data/"
-# sentences = Text8Sentences(os.path.join(DATA_DIR, "text8"), 50)
-sentences = api.load('text8')
-model = w2v.Word2Vec(min_count=1)
-model.build_vocab(sentences)
-model = word2vec.Word2Vec(sentences, size=300, min_count=30)
+DATA_DIR = "/Users/grigorev-ee/Work/AnacondaProjects/Idea/Data/"
+sentences = Text8Sentences(os.path.join(DATA_DIR, "text8"), 50)
+# sentences = api.load('text8')
+# model = w2v.Word2Vec(min_count=1)
+# model.build_vocab(sentences)
+
+model = Word2Vec(sentences, size=300, min_count=30)
 
 word2vec_load=gensim.models.KeyedVectors.load_word2vec_format(fname='/Users/grigorev-ee/Work/AnacondaProjects/Idea/Data/text8',binary=True)
