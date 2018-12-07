@@ -20,8 +20,8 @@ from gensim.models import KeyedVectors
 import logging
 import os
 from gensim import models
-# from gensim.models import Word2Vec, KeyedVectors
-from gensim.models import word2vec
+from gensim.models import Word2Vec, KeyedVectors
+# from gensim.models import word2vec
 # from cltk.vector.word2vec import get_sims
 
 # Затем читаем поток слов из корпуса text8 и разбиваем его на предложения по 50 слов в каждом. Библиотека gensim содержит встроенный
@@ -48,6 +48,7 @@ class Text8Sentences(object):
                     yield words
 
 import gensim.downloader as api
+import gensim
 
 # Теперь займемся вызывающей программой. В библиотеке gensim используется имеющийся в Python механизм протоколирования для уведомления
 # о ходе обработке, поэтому для начала активируем его. В следующей строке создается экземпляр класса Text8Sentences,
@@ -62,3 +63,5 @@ sentences = api.load('text8')
 model = w2v.Word2Vec(min_count=1)
 model.build_vocab(sentences)
 model = word2vec.Word2Vec(sentences, size=300, min_count=30)
+
+word2vec_load=gensim.models.KeyedVectors.load_word2vec_format(fname='/Users/grigorev-ee/Work/AnacondaProjects/Idea/Data/text8',binary=True)
