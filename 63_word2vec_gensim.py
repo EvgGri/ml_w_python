@@ -63,6 +63,6 @@ sentences = Text8Sentences(os.path.join(DATA_DIR, "text8"), 50)
 # model = w2v.Word2Vec(min_count=1)
 # model.build_vocab(sentences)
 
-model = Word2Vec(sentences, size=300, min_count=30)
+model = gensim.models.Word2Vec(sentences, size=300, min_count=30)
 
 word2vec_load=gensim.models.KeyedVectors.load_word2vec_format(fname='/Users/grigorev-ee/Work/AnacondaProjects/Idea/Data/text8',binary=True)
